@@ -25,6 +25,7 @@
         buildInputs = [
           androidComposition.androidsdk
           androidStudioPackages.beta
+          kotlin-language-server
         ];
         ANDROID_SDK_ROOT =
           "${androidComposition.androidsdk}/libexec/android-sdk";
