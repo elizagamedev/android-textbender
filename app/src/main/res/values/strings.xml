@@ -1,6 +1,33 @@
 <resources>
   <string name="app_name">Textbender</string>
-  <string name="accessibility_service_description">
+
+  <string name="accessibility_service_summary">
     Perform arbitrary actions on screen text.
   </string>
+
+  <string name="accessibility_service_description">
+    TODO: Fill this out.
+  </string>
+
+  <string name="title_activity_settings">Textbender Settings</string>
+
+  <!-- Preference Titles -->
+  <string name="permissions_header">Permissions</string>
+  <string name="messages_header">Messages</string>
+  <string name="sync_header">Sync</string>
+
+  <!-- Permission Preferences -->
+  <string name="accessibility_title">Accessibility service</string>
+  <string name="draw_overlays_title">Draw overlays</string>
+
+  <!-- Messages Preferences -->
+  <string name="signature_title">Your signature</string>
+  <string name="reply_title">Default reply action</string>
+
+  <!-- Sync Preferences -->
+  <string name="sync_title">Sync email periodically</string>
+  <string name="attachment_title">Download incoming attachments</string>
+  <string name="attachment_summary_on">Automatically download attachments for incoming emails
+  </string>
+  <string name="attachment_summary_off">Only download attachments when manually requested</string>
 </resources>

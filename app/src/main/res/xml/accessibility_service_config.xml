@@ -1,10 +1,9 @@
 <accessibility-service
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:summary="@string/accessibility_service_summary"
     android:description="@string/accessibility_service_description"
-    android:accessibilityEventTypes="typeAllMask"
-    android:accessibilityFlags="flagDefault"
+    android:accessibilityFlags="flagRetrieveInteractiveWindows|flagRequestAccessibilityButton"
     android:accessibilityFeedbackType="feedbackVisual"
-    android:notificationTimeout="100"
     android:canRetrieveWindowContent="true"
-    android:settingsActivity="sh.eliza.MainActivity"
+    android:settingsActivity="sh.eliza.SettingsActivity"
     />
