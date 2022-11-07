@@ -1,0 +1,12 @@
+* Notes
+- When updating SDK/build tools versions, the following must be changed:
+  - app/build.gradle
+    - ~compileSdk~
+    - ~buildToolsVersion~
+    - ~targetSdk~
+    - ~sourceCompatibility~
+    - ~targetCompatibility~
+    - ~jvmTarget~
+  - app/src/main/AndroidManifest.xml
+    - ~targetApi~
+  - flake.nix
