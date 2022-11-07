@@ -78,7 +78,7 @@ class SettingsActivity : AppCompatActivity() {
             services
               .split(':')
               .contains(
-                "${context.packageName}/${TextbenderAccessibilityService::class.qualifiedName}"
+                "${context.packageName}/${TextbenderService::class.qualifiedName}"
               )
         } catch (e: Settings.SettingNotFoundException) {
           Log.e(TAG, "Failed to determine if accessibility service enabled", e)
