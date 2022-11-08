@@ -12,22 +12,21 @@
   <string name="title_activity_settings">Textbender Settings</string>
 
   <!-- Preference Titles -->
-  <string name="permissions_header">Permissions</string>
-  <string name="messages_header">Messages</string>
-  <string name="sync_header">Sync</string>
+  <string name="sources_header">Sources</string>
+  <string name="destinations_header">Destinations</string>
+  <string name="url_header">Open URL</string>
 
-  <!-- Permission Preferences -->
+  <!-- Text Sources -->
   <string name="accessibility_title">Accessibility service</string>
-  <string name="draw_overlays_title">Draw overlays</string>
+  <string name="accessibility_summary">Allows any visible text on the screen to be selected with a shortcut.</string>
+  <string name="global_context_menu_title">Global context menu</string>
+  <string name="global_context_menu_summary">Shows an entry in the context menu when selecting text.</string>
 
-  <!-- Messages Preferences -->
-  <string name="signature_title">Your signature</string>
-  <string name="reply_title">Default reply action</string>
+  <!-- Destination -->
+  <string name="tap_destination_title">Destination on tap</string>
+  <string name="long_press_destination_title">Destination on long-press</string>
 
-  <!-- Sync Preferences -->
-  <string name="sync_title">Sync email periodically</string>
-  <string name="attachment_title">Download incoming attachments</string>
-  <string name="attachment_summary_on">Automatically download attachments for incoming emails
-  </string>
-  <string name="attachment_summary_off">Only download attachments when manually requested</string>
+  <!-- URL -->
+  <string name="url_format_title">URL format</string>
+  <string name="url_format_default" translatable="false">https://duckduckgo.com/?q={text}</string>
 </resources>

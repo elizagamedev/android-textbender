@@ -1,46 +1,46 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <PreferenceCategory app:title="@string/permissions_header">
+  <PreferenceCategory app:title="@string/sources_header">
 
     <SwitchPreferenceCompat
         app:key="accessibility"
-        app:title="@string/accessibility_title" />
+        app:title="@string/accessibility_title"
+        app:summary="@string/accessibility_summary" />
 
     <SwitchPreferenceCompat
-        app:key="draw_overlays"
-        app:title="@string/draw_overlays_title" />
+        app:key="global_context_menu"
+        app:title="@string/global_context_menu_title"
+        app:summary="@string/global_context_menu_summary" />
 
   </PreferenceCategory>
 
-  <PreferenceCategory app:title="@string/messages_header">
+  <PreferenceCategory app:title="@string/destinations_header">
 
-    <EditTextPreference
-        app:key="signature"
-        app:title="@string/signature_title"
+    <ListPreference
+        app:key="tap_destination_method"
+        app:defaultValue="clipboard"
+        app:entries="@array/destination_entries"
+        app:entryValues="@array/destination_values"
+        app:title="@string/tap_destination_title"
         app:useSimpleSummaryProvider="true" />
 
     <ListPreference
-        app:defaultValue="reply"
-        app:entries="@array/reply_entries"
-        app:entryValues="@array/reply_values"
-        app:key="reply"
-        app:title="@string/reply_title"
+        app:key="long_press_destination_method"
+        app:defaultValue="clipboard"
+        app:entries="@array/destination_entries"
+        app:entryValues="@array/destination_values"
+        app:title="@string/long_press_destination_title"
         app:useSimpleSummaryProvider="true" />
 
   </PreferenceCategory>
 
-  <PreferenceCategory app:title="@string/sync_header">
+  <PreferenceCategory app:title="@string/url_header">
 
-    <SwitchPreferenceCompat
-        app:key="sync"
-        app:title="@string/sync_title" />
-
-    <SwitchPreferenceCompat
-        app:dependency="sync"
-        app:key="attachment"
-        app:summaryOff="@string/attachment_summary_off"
-        app:summaryOn="@string/attachment_summary_on"
-        app:title="@string/attachment_title" />
+    <EditTextPreference
+        app:key="url_format"
+        app:title="@string/url_format_title"
+        app:defaultValue="@string/url_format_default"
+        app:useSimpleSummaryProvider="true" />
 
   </PreferenceCategory>
 

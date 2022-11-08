@@ -1,12 +1,12 @@
 <resources>
-  <!-- Reply Preference -->
-  <string-array name="reply_entries">
-    <item>Reply</item>
-    <item>Reply to all</item>
+  <!-- Destination Method Preference -->
+  <string-array name="destination_entries">
+    <item>Copy to clipboard</item>
+    <item>Open URL</item>
   </string-array>
 
-  <string-array name="reply_values">
-    <item>reply</item>
-    <item>reply_all</item>
+  <string-array name="destination_values">
+    <item>clipboard</item>
+    <item>url</item>
   </string-array>
 </resources>

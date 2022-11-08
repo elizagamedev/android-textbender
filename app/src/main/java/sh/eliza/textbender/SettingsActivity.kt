@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.EditTextPreference
 import androidx.preference.Preference.OnPreferenceChangeListener
 import androidx.preference.Preference.OnPreferenceClickListener
 import androidx.preference.PreferenceFragmentCompat
@@ -24,7 +25,6 @@ class SettingsActivity : AppCompatActivity() {
 
   class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var accessibilityPreference: SwitchPreferenceCompat
-    private lateinit var drawOverlaysPreference: SwitchPreferenceCompat
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
       setPreferencesFromResource(R.xml.root_preferences, rootKey)
@@ -45,21 +45,9 @@ class SettingsActivity : AppCompatActivity() {
           onPreferenceChangeListener = OnPreferenceChangeListener { _, _ -> false }
         }
 
-      drawOverlaysPreference =
-        findPreference<SwitchPreferenceCompat>("draw_overlays")!!.apply {
-          setPersistent(false)
-
-          onPreferenceClickListener = OnPreferenceClickListener {
-            val intent =
-              Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-              }
-            startActivity(intent)
-            true
-          }
-
-          onPreferenceChangeListener = OnPreferenceChangeListener { _, _ -> false }
-        }
+      findPreference<EditTextPreference>("url_format")!!.setOnBindEditTextListener {
+        it.hint = getString(R.string.url_format_default)
+      }
     }
 
     override fun onResume() {
@@ -77,20 +65,9 @@ class SettingsActivity : AppCompatActivity() {
           services != null &&
             services
               .split(':')
-              .contains(
-                "${context.packageName}/${TextbenderService::class.qualifiedName}"
-              )
+              .contains("${context.packageName}/${TextbenderService::class.qualifiedName}")
         } catch (e: Settings.SettingNotFoundException) {
           Log.e(TAG, "Failed to determine if accessibility service enabled", e)
-          false
-        }
-      )
-
-      drawOverlaysPreference.setChecked(
-        try {
-          Settings.canDrawOverlays(context)
-        } catch (e: Settings.SettingNotFoundException) {
-          Log.e(TAG, "Failed to determine if draw overlays permission enabled", e)
           false
         }
       )
