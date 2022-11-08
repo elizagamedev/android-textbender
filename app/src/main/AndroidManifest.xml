@@ -26,14 +26,48 @@
           android:value="" />
     </activity>
 
-    <!-- <activity -->
-    <!--     android:name=".GlobalContextMenuActivity"> -->
-    <!--   <intent-filter> -->
-    <!--     <action android:name="android.intent.action.PROCESS_TEXT"/> -->
-    <!--     <category android:name="android.intent.category.DEFAULT"/> -->
-    <!--     <data android:mimeType="text/plain"/> -->
-    <!--   </intent-filter> -->
-    <!-- </activity> -->
+    <activity-alias
+        android:name=".ContextMenuAction"
+        android:label="@string/app_name"
+        android:enabled="false"
+        android:targetActivity=".ProcessTextActivity"
+        android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.PROCESS_TEXT"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="text/plain"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <!-- Menu won't appear in certain apps unless these are "supported". -->
+        <data android:scheme="http" />
+        <data android:scheme="https" />
+      </intent-filter>
+    </activity-alias>
+
+    <activity-alias
+        android:name=".ShareAction"
+        android:label="@string/app_name"
+        android:enabled="false"
+        android:targetActivity=".ProcessTextActivity"
+        android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.SEND" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <data android:mimeType="text/plain" />
+      </intent-filter>
+    </activity-alias>
+
+    <activity
+        android:name=".ProcessTextActivity"
+        android:label="@string/app_name"
+        android:exported="true"
+        android:noHistory="true"
+        android:launchMode="singleInstance"
+        android:theme="@android:style/Theme.NoDisplay">
+    </activity>
 
     <service
         android:name=".TextbenderService"

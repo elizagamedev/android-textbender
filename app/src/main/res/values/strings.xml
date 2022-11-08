@@ -21,10 +21,14 @@
   <string name="accessibility_summary">Allows any visible text on the screen to be selected with a shortcut.</string>
   <string name="global_context_menu_title">Global context menu</string>
   <string name="global_context_menu_summary">Shows an entry in the context menu when selecting text.</string>
+  <string name="share_title">Share menu</string>
+  <string name="share_summary">Allows text to be received via the share menu.</string>
 
   <!-- Destination -->
   <string name="tap_destination_title">Destination on tap</string>
   <string name="long_press_destination_title">Destination on long-press</string>
+  <string name="global_context_menu_destination_title">Destination on global context menu</string>
+  <string name="share_destination_title">Destination on share</string>
 
   <!-- URL -->
   <string name="url_format_title">URL format</string>

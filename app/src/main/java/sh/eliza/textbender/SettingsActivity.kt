@@ -1,12 +1,13 @@
 package sh.eliza.textbender
 
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.EditTextPreference
-import androidx.preference.Preference.OnPreferenceChangeListener
 import androidx.preference.Preference.OnPreferenceClickListener
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -18,12 +19,27 @@ class SettingsActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.settings_activity)
+
+    val globalContextMenuComponentName = ComponentName(this, "${packageName}.ContextMenuAction")
+    val shareComponentName = ComponentName(this, "${packageName}.ShareAction")
+
     if (savedInstanceState == null) {
-      supportFragmentManager.beginTransaction().replace(R.id.settings, SettingsFragment()).commit()
+      supportFragmentManager
+        .beginTransaction()
+        .replace(
+          R.id.settings,
+          SettingsFragment(packageManager, globalContextMenuComponentName, shareComponentName)
+        )
+        .commit()
     }
   }
 
-  class SettingsFragment : PreferenceFragmentCompat() {
+  class SettingsFragment(
+    private val packageManager: PackageManager,
+    private val globalContextMenuComponentName: ComponentName,
+    private val shareComponentName: ComponentName
+  ) : PreferenceFragmentCompat() {
+
     private lateinit var accessibilityPreference: SwitchPreferenceCompat
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -42,12 +58,32 @@ class SettingsActivity : AppCompatActivity() {
             true
           }
 
-          onPreferenceChangeListener = OnPreferenceChangeListener { _, _ -> false }
-        }
+          findPreference<SwitchPreferenceCompat>("global_context_menu")!!.apply {
+            setPersistent(false)
 
-      findPreference<EditTextPreference>("url_format")!!.setOnBindEditTextListener {
-        it.hint = getString(R.string.url_format_default)
-      }
+            setChecked(isComponentEnabled(globalContextMenuComponentName))
+
+            onPreferenceClickListener = OnPreferenceClickListener {
+              setComponentEnabled(globalContextMenuComponentName, isChecked())
+              true
+            }
+          }
+
+          findPreference<SwitchPreferenceCompat>("share")!!.apply {
+            setPersistent(false)
+
+            setChecked(isComponentEnabled(shareComponentName))
+
+            onPreferenceClickListener = OnPreferenceClickListener {
+              setComponentEnabled(shareComponentName, isChecked())
+              true
+            }
+          }
+
+          findPreference<EditTextPreference>("url_format")!!.setOnBindEditTextListener {
+            it.hint = getString(R.string.url_format_default)
+          }
+        }
     }
 
     override fun onResume() {
@@ -70,6 +106,22 @@ class SettingsActivity : AppCompatActivity() {
           Log.e(TAG, "Failed to determine if accessibility service enabled", e)
           false
         }
+      )
+    }
+
+    private fun isComponentEnabled(componentName: ComponentName) =
+      packageManager.getComponentEnabledSetting(componentName) ==
+        PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+
+    private fun setComponentEnabled(componentName: ComponentName, enabled: Boolean) {
+      packageManager.setComponentEnabledSetting(
+        componentName,
+        if (enabled) {
+          PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        } else {
+          PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        },
+        PackageManager.DONT_KILL_APP
       )
     }
   }

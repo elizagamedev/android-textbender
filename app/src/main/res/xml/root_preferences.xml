@@ -12,12 +12,17 @@
         app:title="@string/global_context_menu_title"
         app:summary="@string/global_context_menu_summary" />
 
+    <SwitchPreferenceCompat
+        app:key="share"
+        app:title="@string/share_title"
+        app:summary="@string/share_summary" />
+
   </PreferenceCategory>
 
   <PreferenceCategory app:title="@string/destinations_header">
 
     <ListPreference
-        app:key="tap_destination_method"
+        app:key="tap_destination"
         app:defaultValue="clipboard"
         app:entries="@array/destination_entries"
         app:entryValues="@array/destination_values"
@@ -25,11 +30,27 @@
         app:useSimpleSummaryProvider="true" />
 
     <ListPreference
-        app:key="long_press_destination_method"
+        app:key="long_press_destination"
         app:defaultValue="clipboard"
         app:entries="@array/destination_entries"
         app:entryValues="@array/destination_values"
         app:title="@string/long_press_destination_title"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        app:key="global_context_menu_destination"
+        app:defaultValue="clipboard"
+        app:entries="@array/destination_entries"
+        app:entryValues="@array/destination_values"
+        app:title="@string/global_context_menu_destination_title"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        app:key="share_destination"
+        app:defaultValue="clipboard"
+        app:entries="@array/destination_entries"
+        app:entryValues="@array/destination_values"
+        app:title="@string/share_destination_title"
         app:useSimpleSummaryProvider="true" />
 
   </PreferenceCategory>
