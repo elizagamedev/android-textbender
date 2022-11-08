@@ -37,14 +37,6 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <data android:mimeType="text/plain"/>
       </intent-filter>
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <!-- Menu won't appear in certain apps unless these are "supported". -->
-        <data android:scheme="http" />
-        <data android:scheme="https" />
-      </intent-filter>
     </activity-alias>
 
     <activity-alias
@@ -82,5 +74,18 @@
           android:resource="@xml/accessibility_service_config" />
     </service>
   </application>
+
+  <queries>
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.BROWSABLE" />
+      <data android:scheme="http" />
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.BROWSABLE" />
+      <data android:scheme="https" />
+    </intent>
+  </queries>
 
 </manifest>

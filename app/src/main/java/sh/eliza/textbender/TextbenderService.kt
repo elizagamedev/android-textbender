@@ -240,6 +240,24 @@ private class Snapshot(
             setPadding(paddingPx.toInt(), 0, paddingPx.toInt(), 0)
 
             setTextSize(TypedValue.COMPLEX_UNIT_PX, max(textArea.textSize - paddingPx, 1f))
+
+            setOnClickListener {
+              val preferences = TextbenderPreferences.createFromContext(context)
+              Textbender.handleText(context, preferences, preferences.tapDestination, textArea.text)
+              onQuit()
+            }
+
+            setOnLongClickListener {
+              val preferences = TextbenderPreferences.createFromContext(context)
+              Textbender.handleText(
+                context,
+                preferences,
+                preferences.longPressDestination,
+                textArea.text
+              )
+              onQuit()
+              true
+            }
           }
         )
       }

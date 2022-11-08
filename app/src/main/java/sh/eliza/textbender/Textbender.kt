@@ -5,7 +5,10 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import java.net.URLEncoder
+
+private const val TAG = "Textbender"
 
 object Textbender {
   fun handleText(
@@ -29,6 +32,7 @@ object Textbender {
               URLEncoder.encode(text.toString(), Charsets.UTF_8.name())
             )
           )
+        Log.i(TAG, "Opening URI: ${uri}")
         val intent = Intent(Intent.ACTION_VIEW, uri).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
         if (intent.resolveActivity(context.packageManager) !== null) {
           context.startActivity(intent)
