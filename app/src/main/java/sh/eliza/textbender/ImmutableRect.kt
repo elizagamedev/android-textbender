@@ -1,6 +1,7 @@
 package sh.eliza.textbender
 
 import android.graphics.Rect
+import android.graphics.RectF
 
 class ImmutableRect(private val rect: Rect) {
   constructor(
@@ -10,12 +11,17 @@ class ImmutableRect(private val rect: Rect) {
     bottom: Int
   ) : this(Rect(left, top, right, bottom)) {}
 
+  constructor(rectf: RectF) : this(Rect().apply { rectf.round(this) }) {}
+
   val left = rect.left
   val top = rect.top
   val right = rect.right
   val bottom = rect.bottom
   val width = rect.width()
   val height = rect.height()
+
+  val isEmpty: Boolean
+    get() = rect.isEmpty()
 
   fun intersects(other: ImmutableRect) = Rect.intersects(rect, other.rect)
 
@@ -42,12 +48,14 @@ class ImmutableRect(private val rect: Rect) {
         // Shy bottom.
         ImmutableRect(other.left, other.bottom, other.right, bottom),
       )
-      .filter { it.height > 0 && it.width > 0 && contains(it) }
+      .filter { !it.isEmpty && contains(it) }
   }
 
   fun offset(dx: Int, dy: Int) = ImmutableRect(Rect(rect).apply { offset(dx, dy) })
 
   fun contains(other: ImmutableRect) = rect.contains(other.rect)
+
+  fun inset(dxy: Int) = ImmutableRect(Rect(rect).apply { inset(dxy, dxy) })
 
   override fun equals(other: Any?) = rect.equals((other as? ImmutableRect)?.rect)
 

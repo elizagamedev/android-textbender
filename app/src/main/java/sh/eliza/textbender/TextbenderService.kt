@@ -5,17 +5,26 @@ import android.accessibilityservice.AccessibilityButtonController.AccessibilityB
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.graphics.PixelFormat
+import android.text.TextUtils.TruncateAt
+import android.util.TypedValue
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.accessibility.AccessibilityWindowInfo
+import android.widget.Button
 import android.widget.FrameLayout
+import kotlin.math.max
 
 private const val TAG = "TextbenderService"
+
+/**
+ * Shrink the text size by this amount to add a slight bit of artificial vertical padding to the
+ * buttons, and add equal horizontal padding.
+ */
+private const val PADDING_DP = 2f
 
 class TextbenderService : AccessibilityService() {
   private lateinit var windowManager: WindowManager
@@ -36,7 +45,7 @@ class TextbenderService : AccessibilityService() {
         ) {}
 
         override fun onClicked(controller: AccessibilityButtonController) {
-          activate()
+          toggle()
         }
       }
     )
@@ -51,18 +60,24 @@ class TextbenderService : AccessibilityService() {
 
   override fun onInterrupt() {}
 
-  private fun activate() {
+  private fun toggle() {
+    val snapshot = snapshot
     snapshot?.close()
-    snapshot =
-      Snapshot(this.applicationContext, windowManager, windows) {
-        snapshot?.close()
-        snapshot = null
-      }
+    if (snapshot !== null) {
+      this.snapshot = null
+    } else {
+      this.snapshot =
+        Snapshot(this.applicationContext, windowManager, windows) {
+          this.snapshot?.close()
+          this.snapshot = null
+        }
+    }
   }
 }
 
 private data class TextArea(
   val text: CharSequence,
+  val textSize: Float?,
   val bounds: ImmutableRect,
 )
 
@@ -91,8 +106,10 @@ private class Snapshot(
           recurse(child)
         }
       }
-      if (occlusionBuffer.add(boundsInScreen) && !text.isNullOrBlank()) {
-        textAreas.add(TextArea(text, boundsInScreen))
+      val textSize = node.textSizeInPx
+      if (occlusionBuffer.add(boundsInScreen) && !text.isNullOrBlank() && textSize !== 0f) {
+        val preciseBounds = node.textBounds ?: boundsInScreen
+        textAreas.add(TextArea(text, textSize, preciseBounds))
       }
     }
 
@@ -141,20 +158,39 @@ private class Snapshot(
   private fun onGlobalLayout() {
     view.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
 
+    val paddingPx =
+      TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        PADDING_DP,
+        context.resources.displayMetrics
+      )
     val boundsInScreen = view.boundsInScreen
 
     for (textArea in textAreas) {
-      view.addView(
-        View(context).apply {
-          val bounds = textArea.bounds.intersect(boundsInScreen)
-          if (bounds != null) {
+      textArea.bounds.intersect(boundsInScreen)?.let { bounds ->
+        view.addView(
+          Button(context, null, 0, R.style.button_textarea).apply {
+            text = textArea.text
             x = (bounds.left - boundsInScreen.left).toFloat()
             y = (bounds.top - boundsInScreen.top).toFloat()
             layoutParams = ViewGroup.LayoutParams(bounds.width, bounds.height)
-            setBackgroundResource(R.drawable.textarea)
+
+            // If a single line, truncate + add ellipsis.
+            if (!textArea.text.contains('\n')) {
+              ellipsize = TruncateAt.END
+              maxLines = 1
+            }
+
+            // Tweaking the text size works well enough for simulating vertical padding, but not
+            // horizontal.
+            setPadding(paddingPx.toInt(), 0, paddingPx.toInt(), 0)
+
+            textArea.textSize?.let {
+              setTextSize(TypedValue.COMPLEX_UNIT_PX, max(it - paddingPx, 1f))
+            }
           }
-        }
-      )
+        )
+      }
     }
   }
 }
