@@ -5,7 +5,6 @@ import android.accessibilityservice.AccessibilityButtonController.AccessibilityB
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.graphics.PixelFormat
-import android.graphics.Rect
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -64,7 +63,7 @@ class TextbenderService : AccessibilityService() {
 
 private data class TextArea(
   val text: CharSequence,
-  val bounds: Rect,
+  val bounds: ImmutableRect,
 )
 
 private class Snapshot(
@@ -74,23 +73,31 @@ private class Snapshot(
   private val onQuit: () -> Unit,
 ) : AutoCloseable {
   private val textAreas = run {
+    val occlusionBuffer = OcclusionBuffer()
     val textAreas = mutableListOf<TextArea>()
 
-    fun AccessibilityNodeInfo.recurse() {
-      if (!isVisibleToUser()) {
+    fun recurse(node: AccessibilityNodeInfo) {
+      if (!node.isVisibleToUser()) {
         return
       }
-      val text = text
-      if (!text.isNullOrBlank()) {
-        textAreas.add(TextArea(text, Rect().apply { getBoundsInScreen(this) }))
+      val boundsInScreen = node.boundsInScreen
+      val text = node.text
+      val children = node.children
+      if (!children.isEmpty()) {
+        if (!occlusionBuffer.isPartiallyVisible(boundsInScreen)) {
+          return
+        }
+        for (child in children) {
+          recurse(child)
+        }
       }
-      for (child in this) {
-        child.recurse()
+      if (occlusionBuffer.add(boundsInScreen) && !text.isNullOrBlank()) {
+        textAreas.add(TextArea(text, boundsInScreen))
       }
     }
 
     for (window in windows) {
-      window.root?.let { it.recurse() }
+      window.root?.let { recurse(it) }
     }
 
     textAreas
@@ -134,50 +141,20 @@ private class Snapshot(
   private fun onGlobalLayout() {
     view.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
 
-    val boundsInScreen = intArrayOf(0, 0).apply { view.getLocationOnScreen(this) }
+    val boundsInScreen = view.boundsInScreen
 
     for (textArea in textAreas) {
       view.addView(
         View(context).apply {
-          x = (textArea.bounds.left - boundsInScreen[0]).toFloat()
-          y = (textArea.bounds.top - boundsInScreen[1]).toFloat()
-          layoutParams = ViewGroup.LayoutParams(textArea.bounds.width(), textArea.bounds.height())
-          setBackgroundResource(R.drawable.textarea)
+          val bounds = textArea.bounds.intersect(boundsInScreen)
+          if (bounds != null) {
+            x = (bounds.left - boundsInScreen.left).toFloat()
+            y = (bounds.top - boundsInScreen.top).toFloat()
+            layoutParams = ViewGroup.LayoutParams(bounds.width, bounds.height)
+            setBackgroundResource(R.drawable.textarea)
+          }
         }
       )
     }
   }
 }
-
-private operator fun AccessibilityNodeInfo.iterator() =
-  object : Iterator<AccessibilityNodeInfo> {
-    var index = 0
-
-    override fun hasNext() = maybeNext() !== null
-
-    override fun next(): AccessibilityNodeInfo {
-      val (nextItem, nextIndex) = maybeNext()!!
-      index = nextIndex + 1
-      return nextItem
-    }
-
-    /**
-     * Sometimes `getChild()` returns null. This is an ugly workaround to make this pleasant to work
-     * with kotlin iterators.
-     */
-    private fun maybeNext(): Pair<AccessibilityNodeInfo, Int>? {
-      if (index >= childCount) {
-        return null
-      }
-      var index = index
-      do {
-        val child = getChild(index)
-        if (child != null) {
-          return Pair(child, index)
-        }
-        index++
-      } while (index < childCount)
-
-      return null
-    }
-  }
