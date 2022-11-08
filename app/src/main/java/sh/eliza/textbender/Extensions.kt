@@ -15,7 +15,8 @@ val AccessibilityNodeInfo.children: List<AccessibilityNodeInfo>
     for (i in 0 until childCount) {
       getChild(i, AccessibilityNodeInfo.FLAG_PREFETCH_SIBLINGS)?.let { list.add(it) }
     }
-    list.sortBy { -it.drawingOrder }
+    list.sortBy { it.drawingOrder }
+    list.reverse()
     return list
   }
 
