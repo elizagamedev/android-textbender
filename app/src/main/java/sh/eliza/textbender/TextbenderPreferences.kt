@@ -15,6 +15,7 @@ data class TextbenderPreferences(
   enum class Destination {
     CLIPBOARD,
     URL,
+    SHARE,
   }
 
   companion object {
@@ -42,6 +43,7 @@ data class TextbenderPreferences(
       when (getString(key, "clipboard")) {
         "clipboard" -> Destination.CLIPBOARD
         "url" -> Destination.URL
+        "share" -> Destination.SHARE
         else -> throw IllegalArgumentException()
       }
   }

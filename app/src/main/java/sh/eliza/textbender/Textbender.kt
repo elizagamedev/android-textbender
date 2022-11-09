@@ -38,6 +38,19 @@ object Textbender {
           context.startActivity(intent)
         }
       }
+      TextbenderPreferences.Destination.SHARE -> {
+        val intent =
+          Intent(Intent.ACTION_SEND).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            setType("text/plain")
+            putExtra(Intent.EXTRA_TEXT, text)
+          }
+        context.startActivity(
+          Intent.createChooser(intent, context.getString(R.string.app_name)).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+          }
+        )
+      }
     }
   }
 }

@@ -3,10 +3,12 @@
   <string-array name="destination_entries">
     <item>Copy to clipboard</item>
     <item>Open URL</item>
+    <item>Share</item>
   </string-array>
 
   <string-array name="destination_values">
     <item>clipboard</item>
     <item>url</item>
+    <item>share</item>
   </string-array>
 </resources>
