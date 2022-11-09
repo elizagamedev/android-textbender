@@ -27,11 +27,11 @@
   <string name="url_summary">Allows text to be received via “textbender://x?x={text…}”.</string>
 
   <!-- Destination -->
-  <string name="tap_destination_title">Destination on tap</string>
-  <string name="long_press_destination_title">Destination on long-press</string>
-  <string name="global_context_menu_destination_title">Destination on global context menu</string>
-  <string name="share_destination_title">Destination on share</string>
-  <string name="url_destination_title">URL scheme destination</string>
+  <string name="tap_destination_title">Accessibility overlay tap</string>
+  <string name="long_press_destination_title">Accessibility overlay long-press</string>
+  <string name="global_context_menu_destination_title">Global context menu</string>
+  <string name="share_destination_title">Share</string>
+  <string name="url_destination_title">URL scheme</string>
 
   <!-- URL -->
   <string name="url_format_title">URL format</string>

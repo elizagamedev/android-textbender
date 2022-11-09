@@ -16,6 +16,7 @@ data class TextbenderPreferences(
     CLIPBOARD,
     URL,
     SHARE,
+    YOMICHAN,
   }
 
   companion object {
@@ -44,6 +45,7 @@ data class TextbenderPreferences(
         "clipboard" -> Destination.CLIPBOARD
         "url" -> Destination.URL
         "share" -> Destination.SHARE
+        "yomichan" -> Destination.YOMICHAN
         else -> throw IllegalArgumentException()
       }
   }

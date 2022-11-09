@@ -51,6 +51,20 @@ object Textbender {
           }
         )
       }
+      TextbenderPreferences.Destination.YOMICHAN -> {
+        // Launch Kiwi browser.
+        val uri = Uri.parse("googlechrome://navigate?url=")
+        val intent =
+          Intent(Intent.ACTION_VIEW, uri).apply {
+            setPackage("com.kiwibrowser.browser")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+          }
+        if (intent.resolveActivity(context.packageManager) !== null) {
+          context.startActivity(intent)
+        }
+        // Copy to clipboard.
+        handleText(context, preferences, TextbenderPreferences.Destination.CLIPBOARD, text)
+      }
     }
   }
 }

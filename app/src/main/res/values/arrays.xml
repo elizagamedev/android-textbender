@@ -4,11 +4,13 @@
     <item>Copy to clipboard</item>
     <item>Open URL</item>
     <item>Share</item>
+    <item>Open in Yomichan via Kiwi Browser</item>
   </string-array>
 
   <string-array name="destination_values">
     <item>clipboard</item>
     <item>url</item>
     <item>share</item>
+    <item>yomichan</item>
   </string-array>
 </resources>
