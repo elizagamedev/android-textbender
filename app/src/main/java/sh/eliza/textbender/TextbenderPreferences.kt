@@ -9,6 +9,7 @@ data class TextbenderPreferences(
   val longPressDestination: Destination,
   val globalContextMenuDestination: Destination,
   val shareDestination: Destination,
+  val urlDestination: Destination,
   val urlFormat: String,
 ) {
   enum class Destination {
@@ -24,6 +25,7 @@ data class TextbenderPreferences(
       val globalContextMenuDestination =
         preferences.getDestination("global_context_menu_destination")
       val shareDestination = preferences.getDestination("share_destination")
+      val urlDestination = preferences.getDestination("url_destination")
       val urlFormat =
         preferences.getString("url_format", null) ?: context.getString(R.string.url_format_default)
       return TextbenderPreferences(
@@ -31,6 +33,7 @@ data class TextbenderPreferences(
         longPressDestination,
         globalContextMenuDestination,
         shareDestination,
+        urlDestination,
         urlFormat
       )
     }

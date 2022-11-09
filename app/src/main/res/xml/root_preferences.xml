@@ -17,6 +17,11 @@
         app:title="@string/share_title"
         app:summary="@string/share_summary" />
 
+    <SwitchPreferenceCompat
+        app:key="url"
+        app:title="@string/url_title"
+        app:summary="@string/url_summary" />
+
   </PreferenceCategory>
 
   <PreferenceCategory app:title="@string/destinations_header">
@@ -51,6 +56,14 @@
         app:entries="@array/destination_entries"
         app:entryValues="@array/destination_values"
         app:title="@string/share_destination_title"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        app:key="url_destination"
+        app:defaultValue="clipboard"
+        app:entries="@array/destination_entries"
+        app:entryValues="@array/destination_values"
+        app:title="@string/url_destination_title"
         app:useSimpleSummaryProvider="true" />
 
   </PreferenceCategory>

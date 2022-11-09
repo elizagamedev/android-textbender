@@ -22,13 +22,19 @@ class SettingsActivity : AppCompatActivity() {
 
     val globalContextMenuComponentName = ComponentName(this, "${packageName}.ContextMenuAction")
     val shareComponentName = ComponentName(this, "${packageName}.ShareAction")
+    val urlComponentName = ComponentName(this, "${packageName}.UrlAction")
 
     if (savedInstanceState == null) {
       supportFragmentManager
         .beginTransaction()
         .replace(
           R.id.settings,
-          SettingsFragment(packageManager, globalContextMenuComponentName, shareComponentName)
+          SettingsFragment(
+            packageManager,
+            globalContextMenuComponentName,
+            shareComponentName,
+            urlComponentName
+          )
         )
         .commit()
     }
@@ -37,7 +43,8 @@ class SettingsActivity : AppCompatActivity() {
   class SettingsFragment(
     private val packageManager: PackageManager,
     private val globalContextMenuComponentName: ComponentName,
-    private val shareComponentName: ComponentName
+    private val shareComponentName: ComponentName,
+    private val urlComponentName: ComponentName,
   ) : PreferenceFragmentCompat() {
 
     private lateinit var accessibilityPreference: SwitchPreferenceCompat
@@ -76,6 +83,17 @@ class SettingsActivity : AppCompatActivity() {
 
             onPreferenceClickListener = OnPreferenceClickListener {
               setComponentEnabled(shareComponentName, isChecked())
+              true
+            }
+          }
+
+          findPreference<SwitchPreferenceCompat>("url")!!.apply {
+            setPersistent(false)
+
+            setChecked(isComponentEnabled(urlComponentName))
+
+            onPreferenceClickListener = OnPreferenceClickListener {
+              setComponentEnabled(urlComponentName, isChecked())
               true
             }
           }
