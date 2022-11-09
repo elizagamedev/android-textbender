@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import java.net.URLEncoder
 
 private const val TAG = "Textbender"
@@ -51,20 +52,40 @@ object Textbender {
           }
         )
       }
-      TextbenderPreferences.Destination.YOMICHAN -> {
-        // Launch Kiwi browser.
-        val uri = Uri.parse("googlechrome://navigate?url=")
-        val intent =
-          Intent(Intent.ACTION_VIEW, uri).apply {
-            setPackage("com.kiwibrowser.browser")
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-          }
-        if (intent.resolveActivity(context.packageManager) !== null) {
-          context.startActivity(intent)
-        }
-        // Copy to clipboard.
-        handleText(context, preferences, TextbenderPreferences.Destination.CLIPBOARD, text)
-      }
+      TextbenderPreferences.Destination.YOMICHAN -> openInYomichan(context, text)
     }
+  }
+}
+
+private fun openInYomichan(context: Context, text: CharSequence) {
+  // Launch Kiwi browser.
+  val uri = Uri.parse("googlechrome://navigate?url=")
+  val intent =
+    Intent(Intent.ACTION_VIEW, uri).apply {
+      setPackage("com.kiwibrowser.browser")
+      flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+  if (intent.resolveActivity(context.packageManager) !== null) {
+    context.startActivity(intent)
+  } else {
+    Toast.makeText(
+        context,
+        context.getString(R.string.could_not_open_kiwi_browser),
+        Toast.LENGTH_LONG
+      )
+      .show()
+    return
+  }
+  val server = TextbenderService.serverInstance
+  if (server !== null) {
+    server.openYomichan(text)
+  } else {
+    Toast.makeText(
+        context,
+        context.getString(R.string.could_not_access_accessibility_service),
+        Toast.LENGTH_LONG
+      )
+      .show()
+    return
   }
 }

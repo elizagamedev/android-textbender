@@ -46,7 +46,6 @@ class SettingsActivity : AppCompatActivity() {
     private val shareComponentName: ComponentName,
     private val urlComponentName: ComponentName,
   ) : PreferenceFragmentCompat() {
-
     private lateinit var accessibilityPreference: SwitchPreferenceCompat
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

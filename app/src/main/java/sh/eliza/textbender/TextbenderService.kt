@@ -4,7 +4,10 @@ import android.accessibilityservice.AccessibilityButtonController
 import android.accessibilityservice.AccessibilityButtonController.AccessibilityButtonCallback
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
+import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils.TruncateAt
 import android.util.TypedValue
 import android.view.Gravity
@@ -16,9 +19,14 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.view.accessibility.AccessibilityWindowInfo
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.Toast
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.max
 
 private const val TAG = "TextbenderService"
+
+private const val YOMICHAN_URL_PREFIX =
+  "chrome-extension://ogmnaimimemjmbakcfefmnahgdfhfami/search.html?full="
 
 /**
  * Grow the "precise" view area by this amount, not exceeding the bounds of the parent view. This
@@ -41,17 +49,26 @@ private const val DEFAULT_TEXT_SIZE_DP = 32f
 /** Minimum length of a string to be considered "wrappable". */
 private const val MIN_WRAPPABLE_LENGTH = 32
 
+private val instance = AtomicReference<TextbenderService>()
+
 class TextbenderService : AccessibilityService() {
+  private val mainHandler = Handler(Looper.getMainLooper())
+
+  private lateinit var server: ServiceServer
   private lateinit var windowManager: WindowManager
 
   private var snapshot: Snapshot? = null
+  private val openYomichanStateMachine = AtomicReference<OpenYomichanStateMachine>()
 
   override fun onCreate() {
     super.onCreate()
+    server = ServiceServer(this)
     windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
   }
 
   override fun onServiceConnected() {
+    instance.set(this)
+
     accessibilityButtonController.registerAccessibilityButtonCallback(
       object : AccessibilityButtonCallback() {
         override fun onAvailabilityChanged(
@@ -66,14 +83,29 @@ class TextbenderService : AccessibilityService() {
     )
   }
 
+  override fun onUnbind(intent: Intent): Boolean {
+    instance.compareAndSet(this, null)
+    openYomichanStateMachine.getAndSet(null)?.close()
+    return false
+  }
+
   override fun onDestroy() {
     super.onDestroy()
+    server.close()
     snapshot?.close()
   }
 
   override fun onAccessibilityEvent(event: AccessibilityEvent) {}
 
   override fun onInterrupt() {}
+
+  fun openYomichan(text: CharSequence) {
+    openYomichanStateMachine.getAndSet(OpenYomichanStateMachine(this, text))?.close()
+  }
+
+  fun makeToast(message: String) {
+    mainHandler.post { Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show() }
+  }
 
   private fun toggle() {
     val snapshot = snapshot
@@ -87,6 +119,11 @@ class TextbenderService : AccessibilityService() {
           this.snapshot = null
         }
     }
+  }
+
+  companion object {
+    val serverInstance: ServiceServer?
+      get() = instance.get()?.server
   }
 }
 
