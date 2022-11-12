@@ -17,7 +17,7 @@ val AccessibilityNodeInfo.children: List<AccessibilityNodeInfo>
     val childCount = childCount
     val list = ArrayList<AccessibilityNodeInfo>(childCount)
     for (i in 0 until childCount) {
-      getChild(i, AccessibilityNodeInfo.FLAG_PREFETCH_SIBLINGS)?.let { list.add(it) }
+      getChild(i)?.let { list.add(it) }
     }
     list.sortBy { it.drawingOrder }
     list.reverse()
@@ -70,8 +70,7 @@ fun AccessibilityNodeInfo.find(
   }
   val childCount = childCount
   for (i in 0 until childCount) {
-    val result =
-      getChild(i, AccessibilityNodeInfo.FLAG_PREFETCH_DESCENDANTS_DEPTH_FIRST)?.find(predicate)
+    val result = getChild(i)?.find(predicate)
     if (result !== null) {
       return result
     }
