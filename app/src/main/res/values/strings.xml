@@ -15,13 +15,22 @@
   <string name="could_not_open_yomichan">Could not open Yomichan.</string>
 
   <!-- Preference Titles -->
+  <string name="permissions_header">Permissions</string>
   <string name="sources_header">Sources</string>
   <string name="destinations_header">Destinations</string>
   <string name="url_header">Open URL</string>
 
-  <!-- Text Sources -->
+  <!-- Permission Titles -->
   <string name="accessibility_title">Accessibility service</string>
-  <string name="accessibility_summary">Allows any visible text on the screen to be selected with a shortcut.</string>
+  <string name="accessibility_summary">Required for text button overlay and Yomichan support.</string>
+  <!-- <string name="floating_button_title">Floating windows</string> -->
+  <!-- <string name="floating_button_summary">Required for floating button support.</string> -->
+
+  <!-- Text Sources -->
+  <string name="accessibility_shortcut_title">Accessibility shortcut</string>
+  <string name="accessibility_shortcut_summary">Shows text button overlay when the accessibility shortcut is pressed.</string>
+  <string name="floating_button_title">Floating button</string>
+  <string name="floating_button_summary">Shows text button overlay when the floating button is pressed.</string>
   <string name="global_context_menu_title">Global context menu</string>
   <string name="global_context_menu_summary">Shows an entry in the context menu when selecting text.</string>
   <string name="share_title">Share menu</string>

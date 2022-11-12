@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 
 data class TextbenderPreferences(
+  val accessibilityShortcutEnabled: Boolean,
+  val floatingButtonEnabled: Boolean,
   val tapDestination: Destination,
   val longPressDestination: Destination,
   val globalContextMenuDestination: Destination,
@@ -22,6 +24,10 @@ data class TextbenderPreferences(
   companion object {
     fun createFromContext(context: Context): TextbenderPreferences {
       val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+      val accessibilityShortcutEnabled = preferences.getBoolean("accessibility_shortcut", false)
+      val floatingButtonEnabled = preferences.getBoolean("floating_button", false)
+
       val tapDestination = preferences.getDestination("tap_destination")
       val longPressDestination = preferences.getDestination("long_press_destination")
       val globalContextMenuDestination =
@@ -31,6 +37,8 @@ data class TextbenderPreferences(
       val urlFormat =
         preferences.getString("url_format", null) ?: context.getString(R.string.url_format_default)
       return TextbenderPreferences(
+        accessibilityShortcutEnabled,
+        floatingButtonEnabled,
         tapDestination,
         longPressDestination,
         globalContextMenuDestination,

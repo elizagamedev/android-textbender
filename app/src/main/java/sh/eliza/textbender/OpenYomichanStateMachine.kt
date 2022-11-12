@@ -20,7 +20,8 @@ private const val YOMICHAN_URL_PREFIX =
 /** Replace this with a coroutine or something eventually. */
 class OpenYomichanStateMachine(
   private val service: TextbenderService,
-  private val text: CharSequence
+  private val text: CharSequence,
+  private val onQuit: (OpenYomichanStateMachine) -> Unit,
 ) : AutoCloseable {
   interface State {
     fun advance(): State?
@@ -128,21 +129,17 @@ class OpenYomichanStateMachine(
         return
       }
       Log.i(TAG, "Giving up")
-      service.makeToast(service.applicationContext.getString(R.string.could_not_open_yomichan))
       state = null
     }
-    handlerThread.quit()
-    service.softKeyboardController.showMode = AccessibilityService.SHOW_MODE_AUTO
+    onQuit(this)
   }
 
   override fun close() {
-    if (isAlive) {
-      handlerThread.run {
-        quit()
-        join()
-      }
-      state = null
-      service.softKeyboardController.showMode = AccessibilityService.SHOW_MODE_AUTO
+    handlerThread.run {
+      quit()
+      join()
     }
+    state = null
+    service.softKeyboardController.showMode = AccessibilityService.SHOW_MODE_AUTO
   }
 }

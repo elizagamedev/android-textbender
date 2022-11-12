@@ -1,11 +1,27 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <PreferenceCategory app:title="@string/sources_header">
+  <PreferenceCategory app:title="@string/permissions_header">
 
     <SwitchPreferenceCompat
         app:key="accessibility"
         app:title="@string/accessibility_title"
         app:summary="@string/accessibility_summary" />
+
+  </PreferenceCategory>
+
+  <PreferenceCategory app:title="@string/sources_header">
+
+    <SwitchPreferenceCompat
+        app:key="accessibility_shortcut"
+        app:title="@string/accessibility_shortcut_title"
+        app:summary="@string/accessibility_shortcut_summary"
+        app:dependency="accessibility" />
+
+    <SwitchPreferenceCompat
+        app:key="floating_button"
+        app:title="@string/floating_button_title"
+        app:summary="@string/floating_button_summary"
+        app:dependency="accessibility" />
 
     <SwitchPreferenceCompat
         app:key="global_context_menu"
@@ -32,7 +48,8 @@
         app:entries="@array/destination_entries"
         app:entryValues="@array/destination_values"
         app:title="@string/tap_destination_title"
-        app:useSimpleSummaryProvider="true" />
+        app:useSimpleSummaryProvider="true"
+        app:dependency="accessibility" />
 
     <ListPreference
         app:key="long_press_destination"
@@ -40,7 +57,8 @@
         app:entries="@array/destination_entries"
         app:entryValues="@array/destination_values"
         app:title="@string/long_press_destination_title"
-        app:useSimpleSummaryProvider="true" />
+        app:useSimpleSummaryProvider="true"
+        app:dependency="accessibility" />
 
     <ListPreference
         app:key="global_context_menu_destination"

@@ -64,38 +64,11 @@ class SettingsActivity : AppCompatActivity() {
             true
           }
 
-          findPreference<SwitchPreferenceCompat>("global_context_menu")!!.apply {
-            setPersistent(false)
-
-            setChecked(isComponentEnabled(globalContextMenuComponentName))
-
-            onPreferenceClickListener = OnPreferenceClickListener {
-              setComponentEnabled(globalContextMenuComponentName, isChecked())
-              true
-            }
-          }
-
-          findPreference<SwitchPreferenceCompat>("share")!!.apply {
-            setPersistent(false)
-
-            setChecked(isComponentEnabled(shareComponentName))
-
-            onPreferenceClickListener = OnPreferenceClickListener {
-              setComponentEnabled(shareComponentName, isChecked())
-              true
-            }
-          }
-
-          findPreference<SwitchPreferenceCompat>("url")!!.apply {
-            setPersistent(false)
-
-            setChecked(isComponentEnabled(urlComponentName))
-
-            onPreferenceClickListener = OnPreferenceClickListener {
-              setComponentEnabled(urlComponentName, isChecked())
-              true
-            }
-          }
+          findPreference<SwitchPreferenceCompat>("global_context_menu")!!.setAsComponentSwitch(
+            globalContextMenuComponentName
+          )
+          findPreference<SwitchPreferenceCompat>("share")!!.setAsComponentSwitch(shareComponentName)
+          findPreference<SwitchPreferenceCompat>("url")!!.setAsComponentSwitch(urlComponentName)
 
           findPreference<EditTextPreference>("url_format")!!.setOnBindEditTextListener {
             it.hint = getString(R.string.url_format_default)
@@ -124,6 +97,17 @@ class SettingsActivity : AppCompatActivity() {
           false
         }
       )
+    }
+
+    private fun SwitchPreferenceCompat.setAsComponentSwitch(componentName: ComponentName) {
+      setPersistent(false)
+
+      setChecked(isComponentEnabled(componentName))
+
+      onPreferenceClickListener = OnPreferenceClickListener {
+        setComponentEnabled(componentName, isChecked())
+        true
+      }
     }
 
     private fun isComponentEnabled(componentName: ComponentName) =
