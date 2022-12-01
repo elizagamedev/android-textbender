@@ -5,19 +5,19 @@ import android.accessibilityservice.AccessibilityButtonController.AccessibilityB
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.os.Handler
-import android.os.Looper
+import android.os.HandlerThread
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import java.util.concurrent.atomic.AtomicReference
 
 private const val TAG = "TextbenderService"
 
-private val instance = AtomicReference<TextbenderService>()
+private val atomicInstance = AtomicReference<TextbenderService>()
 
 class TextbenderService : AccessibilityService() {
-  private val mainHandler = Handler(Looper.getMainLooper())
+  private val handlerThread = HandlerThread(TAG).apply { start() }
+  val handler = Handler(handlerThread.looper)
 
-  private lateinit var server: ServiceServer
   private lateinit var windowManager: WindowManager
 
   private var snapshot: Snapshot? = null
@@ -25,12 +25,11 @@ class TextbenderService : AccessibilityService() {
 
   override fun onCreate() {
     super.onCreate()
-    server = ServiceServer(this)
     windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
   }
 
   override fun onServiceConnected() {
-    instance.set(this)
+    atomicInstance.set(this)
 
     accessibilityButtonController.registerAccessibilityButtonCallback(
       object : AccessibilityButtonCallback() {
@@ -43,7 +42,7 @@ class TextbenderService : AccessibilityService() {
           if (TextbenderPreferences.createFromContext(applicationContext)
               .accessibilityShortcutEnabled
           ) {
-            toggle()
+            toggleOverlay()
           }
         }
       }
@@ -51,14 +50,17 @@ class TextbenderService : AccessibilityService() {
   }
 
   override fun onUnbind(intent: Intent): Boolean {
-    instance.compareAndSet(this, null)
+    handlerThread.run {
+      quit()
+      join()
+    }
+    atomicInstance.compareAndSet(this, null)
     openYomichanStateMachine.getAndSet(null)?.close()
     return false
   }
 
   override fun onDestroy() {
     super.onDestroy()
-    server.close()
     snapshot?.close()
   }
 
@@ -67,6 +69,10 @@ class TextbenderService : AccessibilityService() {
   override fun onInterrupt() {}
 
   fun openYomichan(text: CharSequence) {
+    handler.post { handleOpenYomichan(text) }
+  }
+
+  private fun handleOpenYomichan(text: CharSequence) {
     openYomichanStateMachine
       .getAndSet(
         OpenYomichanStateMachine(this, text) {
@@ -77,7 +83,7 @@ class TextbenderService : AccessibilityService() {
       ?.close()
   }
 
-  private fun toggle() {
+  private fun toggleOverlay() {
     val snapshot = snapshot
     snapshot?.close()
     if (snapshot !== null) {
@@ -92,7 +98,7 @@ class TextbenderService : AccessibilityService() {
   }
 
   companion object {
-    val serverInstance: ServiceServer?
-      get() = instance.get()?.server
+    val instance: TextbenderService?
+      get() = atomicInstance.get()
   }
 }

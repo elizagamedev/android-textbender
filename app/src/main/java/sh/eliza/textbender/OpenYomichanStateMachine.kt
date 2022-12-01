@@ -2,9 +2,6 @@ package sh.eliza.textbender
 
 import android.accessibilityservice.AccessibilityService
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.SystemClock.sleep
 import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
 import java.net.URLEncoder
@@ -50,10 +47,17 @@ class OpenYomichanStateMachine(
         return this
       }
 
-      val url = YOMICHAN_URL_PREFIX + URLEncoder.encode(text.toString(), Charsets.UTF_8.name())
-
       addressBar.performAction(AccessibilityNodeInfo.ACTION_FOCUS, Bundle())
-      sleep(RETRY_INTERVAL_MS)
+      return Delay(1, SetAddressBarText(root, addressBar))
+    }
+  }
+
+  private inner class SetAddressBarText(
+    private val root: AccessibilityNodeInfo,
+    private val addressBar: AccessibilityNodeInfo
+  ) : State {
+    override fun advance(): State? {
+      val url = YOMICHAN_URL_PREFIX + URLEncoder.encode(text.toString(), Charsets.UTF_8.name())
       addressBar.performAction(
         AccessibilityNodeInfo.ACTION_SET_TEXT,
         Bundle().apply {
@@ -85,19 +89,23 @@ class OpenYomichanStateMachine(
         return this
       }
       result.performAction(AccessibilityNodeInfo.ACTION_CLICK, Bundle())
+      return Delay(1, null)
+    }
+  }
 
-      // Delay a bit before exiting the state machine.
-      sleep(RETRY_INTERVAL_MS)
+  private inner class Delay(private val times: Int, private val nextState: State?) : State {
+    private var counter = 0
 
-      return null
+    override fun advance(): State? {
+      if (counter++ < times) {
+        return this
+      }
+      return nextState
     }
   }
 
   val isAlive: Boolean
     get() = state !== null
-
-  private val handlerThread = HandlerThread(TAG).apply { start() }
-  private val handler = Handler(handlerThread.looper)
 
   private var state: State? = LocateKiwiBrowserWindow()
   private var tries = 0
@@ -125,7 +133,7 @@ class OpenYomichanStateMachine(
 
     if (state !== null) {
       if (tries < MAX_RETRIES) {
-        handler.postDelayed(this::advance, RETRY_INTERVAL_MS)
+        service.handler.postDelayed(this::advance, RETRY_INTERVAL_MS)
         return
       }
       Log.i(TAG, "Giving up")
@@ -135,10 +143,6 @@ class OpenYomichanStateMachine(
   }
 
   override fun close() {
-    handlerThread.run {
-      quit()
-      join()
-    }
     state = null
     service.softKeyboardController.showMode = AccessibilityService.SHOW_MODE_AUTO
   }

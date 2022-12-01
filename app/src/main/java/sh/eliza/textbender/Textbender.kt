@@ -76,9 +76,9 @@ private fun openInYomichan(context: Context, text: CharSequence) {
       .show()
     return
   }
-  val server = TextbenderService.serverInstance
-  if (server !== null) {
-    server.openYomichan(text)
+  val service = TextbenderService.instance
+  if (service !== null) {
+    service.openYomichan(text)
   } else {
     Toast.makeText(
         context,
