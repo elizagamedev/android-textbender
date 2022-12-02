@@ -4,10 +4,12 @@ import android.accessibilityservice.AccessibilityButtonController
 import android.accessibilityservice.AccessibilityButtonController.AccessibilityButtonCallback
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
+import android.graphics.PixelFormat
 import android.os.Handler
 import android.os.HandlerThread
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import android.widget.Button
 import java.util.concurrent.atomic.AtomicReference
 
 private const val TAG = "TextbenderService"
@@ -18,10 +20,20 @@ class TextbenderService : AccessibilityService() {
   private val handlerThread = HandlerThread(TAG).apply { start() }
   val handler = Handler(handlerThread.looper)
 
+  private val onPreferenceChangeListener: () -> Unit = {
+    handler.post {
+      setFloatingButton(
+        TextbenderPreferences.createFromContext(applicationContext).floatingButtonEnabled
+      )
+    }
+  }
+
   private lateinit var windowManager: WindowManager
 
   private var snapshot: Snapshot? = null
   private val openYomichanStateMachine = AtomicReference<OpenYomichanStateMachine>()
+
+  private var floatingButton: Button? = null
 
   override fun onCreate() {
     super.onCreate()
@@ -47,11 +59,18 @@ class TextbenderService : AccessibilityService() {
         }
       }
     )
+
+    setFloatingButton(
+      TextbenderPreferences.createFromContext(applicationContext).floatingButtonEnabled
+    )
+
+    TextbenderPreferences.registerOnChangeListener(applicationContext, onPreferenceChangeListener)
   }
 
   override fun onUnbind(intent: Intent): Boolean {
+    TextbenderPreferences.unregisterOnChangeListener(applicationContext, onPreferenceChangeListener)
     handlerThread.run {
-      quit()
+      quitSafely()
       join()
     }
     atomicInstance.compareAndSet(this, null)
@@ -94,6 +113,35 @@ class TextbenderService : AccessibilityService() {
           this.snapshot?.close()
           this.snapshot = null
         }
+    }
+  }
+
+  private fun setFloatingButton(enabled: Boolean) {
+    if (enabled) {
+      if (floatingButton !== null) {
+        return
+      }
+      val button =
+        Button(applicationContext).apply {
+          text = "Hello"
+          setOnTouchListener { _, event -> true }
+        }
+      windowManager.addView(
+        button,
+        WindowManager.LayoutParams(
+          WindowManager.LayoutParams.WRAP_CONTENT,
+          WindowManager.LayoutParams.WRAP_CONTENT,
+          WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+          WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+          PixelFormat.TRANSLUCENT
+        )
+      )
+      floatingButton = button
+    } else {
+      floatingButton?.let {
+        windowManager.removeView(it)
+        floatingButton = null
+      }
     }
   }
 

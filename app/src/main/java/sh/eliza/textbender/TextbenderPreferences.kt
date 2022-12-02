@@ -2,7 +2,11 @@ package sh.eliza.textbender
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.preference.PreferenceManager
+import java.util.concurrent.ConcurrentHashMap
+
+private val onChangeListeners = ConcurrentHashMap<() -> Unit, OnSharedPreferenceChangeListener>()
 
 data class TextbenderPreferences(
   val accessibilityShortcutEnabled: Boolean,
@@ -46,6 +50,20 @@ data class TextbenderPreferences(
         urlDestination,
         urlFormat
       )
+    }
+
+    fun registerOnChangeListener(context: Context, listener: () -> Unit) {
+      val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+      val innerListener = OnSharedPreferenceChangeListener { _, _ -> listener() }
+      onChangeListeners.put(listener, innerListener)
+      preferences.registerOnSharedPreferenceChangeListener(innerListener)
+    }
+
+    fun unregisterOnChangeListener(context: Context, listener: () -> Unit) {
+      val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+      onChangeListeners.remove(listener)?.let {
+        preferences.unregisterOnSharedPreferenceChangeListener(it)
+      }
     }
 
     private fun SharedPreferences.getDestination(key: String) =
