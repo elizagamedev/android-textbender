@@ -17,6 +17,9 @@ data class TextbenderPreferences(
   val shareDestination: Destination,
   val urlDestination: Destination,
   val urlFormat: String,
+  // Hidden preferences
+  val floatingButtonX: Int,
+  val floatingButtonY: Int,
 ) {
   enum class Destination {
     CLIPBOARD,
@@ -40,6 +43,8 @@ data class TextbenderPreferences(
       val urlDestination = preferences.getDestination("url_destination")
       val urlFormat =
         preferences.getString("url_format", null) ?: context.getString(R.string.url_format_default)
+      val floatingButtonX = preferences.getInt("floating_button_x", 0)
+      val floatingButtonY = preferences.getInt("floating_button_y", 0)
       return TextbenderPreferences(
         accessibilityShortcutEnabled,
         floatingButtonEnabled,
@@ -48,7 +53,9 @@ data class TextbenderPreferences(
         globalContextMenuDestination,
         shareDestination,
         urlDestination,
-        urlFormat
+        urlFormat,
+        floatingButtonX,
+        floatingButtonY
       )
     }
 
@@ -64,6 +71,14 @@ data class TextbenderPreferences(
       onChangeListeners.remove(listener)?.let {
         preferences.unregisterOnSharedPreferenceChangeListener(it)
       }
+    }
+
+    fun putFloatingButton(context: Context, x: Int, y: Int) {
+      PreferenceManager.getDefaultSharedPreferences(context)
+        .edit()
+        .putInt("floating_button_x", x)
+        .putInt("floating_button_y", y)
+        .commit()
     }
 
     private fun SharedPreferences.getDestination(key: String) =

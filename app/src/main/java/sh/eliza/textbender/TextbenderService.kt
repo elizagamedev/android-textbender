@@ -4,12 +4,10 @@ import android.accessibilityservice.AccessibilityButtonController
 import android.accessibilityservice.AccessibilityButtonController.AccessibilityButtonCallback
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
-import android.graphics.PixelFormat
 import android.os.Handler
 import android.os.HandlerThread
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
-import android.widget.Button
 import java.util.concurrent.atomic.AtomicReference
 
 private const val TAG = "TextbenderService"
@@ -20,20 +18,14 @@ class TextbenderService : AccessibilityService() {
   private val handlerThread = HandlerThread(TAG).apply { start() }
   val handler = Handler(handlerThread.looper)
 
-  private val onPreferenceChangeListener: () -> Unit = {
-    handler.post {
-      setFloatingButton(
-        TextbenderPreferences.createFromContext(applicationContext).floatingButtonEnabled
-      )
-    }
-  }
+  private val onPreferenceChangeListener: () -> Unit = { handler.post { resetFloatingButton() } }
 
-  private lateinit var windowManager: WindowManager
+  lateinit var windowManager: WindowManager
 
   private var snapshot: Snapshot? = null
   private val openYomichanStateMachine = AtomicReference<OpenYomichanStateMachine>()
 
-  private var floatingButton: Button? = null
+  private var floatingButton: FloatingButton? = null
 
   override fun onCreate() {
     super.onCreate()
@@ -54,15 +46,15 @@ class TextbenderService : AccessibilityService() {
           if (TextbenderPreferences.createFromContext(applicationContext)
               .accessibilityShortcutEnabled
           ) {
-            toggleOverlay()
+            if (snapshot === null) {
+              openOverlay()
+            }
           }
         }
       }
     )
 
-    setFloatingButton(
-      TextbenderPreferences.createFromContext(applicationContext).floatingButtonEnabled
-    )
+    handler.post { resetFloatingButton() }
 
     TextbenderPreferences.registerOnChangeListener(applicationContext, onPreferenceChangeListener)
   }
@@ -81,6 +73,7 @@ class TextbenderService : AccessibilityService() {
   override fun onDestroy() {
     super.onDestroy()
     snapshot?.close()
+    floatingButton?.close()
   }
 
   override fun onAccessibilityEvent(event: AccessibilityEvent) {}
@@ -89,6 +82,10 @@ class TextbenderService : AccessibilityService() {
 
   fun openYomichan(text: CharSequence) {
     handler.post { handleOpenYomichan(text) }
+  }
+
+  fun openOverlay() {
+    handler.post { handleOpenOverlay() }
   }
 
   private fun handleOpenYomichan(text: CharSequence) {
@@ -102,46 +99,27 @@ class TextbenderService : AccessibilityService() {
       ?.close()
   }
 
-  private fun toggleOverlay() {
-    val snapshot = snapshot
+  private fun handleOpenOverlay() {
+    floatingButton?.close()
+    floatingButton = null
     snapshot?.close()
-    if (snapshot !== null) {
-      this.snapshot = null
-    } else {
-      this.snapshot =
-        Snapshot(this.applicationContext, windowManager, windows) {
-          this.snapshot?.close()
-          this.snapshot = null
-        }
-    }
+    snapshot =
+      Snapshot(applicationContext, windowManager, windows) {
+        this.snapshot?.close()
+        this.snapshot = null
+        resetFloatingButton()
+      }
   }
 
-  private fun setFloatingButton(enabled: Boolean) {
+  private fun resetFloatingButton() {
+    val enabled = TextbenderPreferences.createFromContext(applicationContext).floatingButtonEnabled
     if (enabled) {
-      if (floatingButton !== null) {
-        return
+      if (floatingButton === null) {
+        floatingButton = FloatingButton(this)
       }
-      val button =
-        Button(applicationContext).apply {
-          text = "Hello"
-          setOnTouchListener { _, event -> true }
-        }
-      windowManager.addView(
-        button,
-        WindowManager.LayoutParams(
-          WindowManager.LayoutParams.WRAP_CONTENT,
-          WindowManager.LayoutParams.WRAP_CONTENT,
-          WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-          WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-          PixelFormat.TRANSLUCENT
-        )
-      )
-      floatingButton = button
     } else {
-      floatingButton?.let {
-        windowManager.removeView(it)
-        floatingButton = null
-      }
+      floatingButton?.close()
+      floatingButton = null
     }
   }
 

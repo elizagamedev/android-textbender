@@ -12,7 +12,6 @@
   <string name="title_activity_settings">Textbender Settings</string>
   <string name="could_not_open_kiwi_browser">Could not open Kiwi Browser.</string>
   <string name="could_not_access_accessibility_service">Could not access Textbender accessibility service.</string>
-  <string name="could_not_open_yomichan">Could not open Yomichan.</string>
 
   <!-- Preference Titles -->
   <string name="permissions_header">Permissions</string>
@@ -23,8 +22,6 @@
   <!-- Permission Titles -->
   <string name="accessibility_title">Accessibility service</string>
   <string name="accessibility_summary">Required for text button overlay and Yomichan support.</string>
-  <!-- <string name="floating_button_title">Floating windows</string> -->
-  <!-- <string name="floating_button_summary">Required for floating button support.</string> -->
 
   <!-- Text Sources -->
   <string name="accessibility_shortcut_title">Accessibility shortcut</string>
@@ -39,8 +36,8 @@
   <string name="url_summary">Allows text to be received via “textbender://x?x={text…}”.</string>
 
   <!-- Destination -->
-  <string name="tap_destination_title">Accessibility overlay tap</string>
-  <string name="long_press_destination_title">Accessibility overlay long-press</string>
+  <string name="tap_destination_title">Overlay tap</string>
+  <string name="long_press_destination_title">Overlay long-press</string>
   <string name="global_context_menu_destination_title">Global context menu</string>
   <string name="share_destination_title">Share</string>
   <string name="url_destination_title">URL scheme</string>
