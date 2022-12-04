@@ -5,15 +5,17 @@ import android.graphics.PixelFormat
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.WindowManager
-import android.widget.Button
+import android.widget.ImageButton
 import kotlin.math.abs
 
 private const val DRAG_DIAMETER_DP = 20f
+private const val BUTTON_SIZE_DP = 128f
 
 class FloatingButton(private val service: TextbenderService) : AutoCloseable {
-  private val button: Button =
-    Button(service.applicationContext).apply {
-      text = service.applicationContext.getString(R.string.app_name)
+  private val button: ImageButton =
+    ImageButton(service.applicationContext).apply {
+      setImageResource(R.drawable.ic_launcher_foreground)
+      adjustViewBounds = true
       setOnClickListener { _ -> onClick() }
       setOnLongClickListener { _ ->
         onLongClick()
@@ -27,20 +29,27 @@ class FloatingButton(private val service: TextbenderService) : AutoCloseable {
       }
     }
 
-  private val layoutParams =
-    WindowManager.LayoutParams(
-      WindowManager.LayoutParams.WRAP_CONTENT,
-      WindowManager.LayoutParams.WRAP_CONTENT,
-      WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-      WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-      PixelFormat.TRANSLUCENT
-    )
-
-  val dragDiameterPx =
+  private val dragDiameterPx =
     TypedValue.applyDimension(
       TypedValue.COMPLEX_UNIT_PX,
       DRAG_DIAMETER_DP,
       service.applicationContext.resources.displayMetrics
+    )
+
+  private val buttonSizePx =
+    TypedValue.applyDimension(
+      TypedValue.COMPLEX_UNIT_PX,
+      BUTTON_SIZE_DP,
+      service.applicationContext.resources.displayMetrics
+    )
+
+  private val layoutParams =
+    WindowManager.LayoutParams(
+      buttonSizePx.toInt(),
+      buttonSizePx.toInt(),
+      WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+      WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+      PixelFormat.TRANSLUCENT
     )
 
   init {

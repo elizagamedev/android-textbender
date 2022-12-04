@@ -170,43 +170,54 @@ class Snapshot(
     for (textArea in textAreas) {
       textArea.bounds.intersect(boundsInScreen)?.let { bounds ->
         view.addView(
-          Button(context, null, 0, R.style.button_textarea).apply {
-            text = textArea.text
-            x = (bounds.left - boundsInScreen.left).toFloat()
-            y = (bounds.top - boundsInScreen.top).toFloat()
-            layoutParams = ViewGroup.LayoutParams(bounds.width, bounds.height)
+          Button(
+              context,
+              /*attrs=*/ null,
+              /*defStyleAttr=*/ 0,
+              /*defStyleRes=*/ R.style.button_textarea
+            )
+            .apply {
+              text = textArea.text
+              x = (bounds.left - boundsInScreen.left).toFloat()
+              y = (bounds.top - boundsInScreen.top).toFloat()
+              layoutParams = ViewGroup.LayoutParams(bounds.width, bounds.height)
 
-            // If a single line, truncate + add ellipsis + center.
-            if (textArea.text.length < MIN_WRAPPABLE_LENGTH && !textArea.text.contains('\n')) {
-              ellipsize = TruncateAt.END
-              maxLines = 1
-              gravity = Gravity.CENTER_VERTICAL or Gravity.CENTER_HORIZONTAL
+              // If a single line, truncate + add ellipsis + center.
+              if (textArea.text.length < MIN_WRAPPABLE_LENGTH && !textArea.text.contains('\n')) {
+                ellipsize = TruncateAt.END
+                maxLines = 1
+                gravity = Gravity.CENTER_VERTICAL or Gravity.CENTER_HORIZONTAL
+              }
+
+              // Tweaking the text size works well enough for simulating vertical padding, but not
+              // horizontal.
+              setPadding(paddingPx.toInt(), 0, paddingPx.toInt(), 0)
+
+              setTextSize(TypedValue.COMPLEX_UNIT_PX, max(textArea.textSize - paddingPx, 1f))
+
+              setOnClickListener {
+                val preferences = TextbenderPreferences.createFromContext(context)
+                Textbender.handleText(
+                  context,
+                  preferences,
+                  preferences.tapDestination,
+                  textArea.text
+                )
+                onQuit()
+              }
+
+              setOnLongClickListener {
+                val preferences = TextbenderPreferences.createFromContext(context)
+                Textbender.handleText(
+                  context,
+                  preferences,
+                  preferences.longPressDestination,
+                  textArea.text
+                )
+                onQuit()
+                true
+              }
             }
-
-            // Tweaking the text size works well enough for simulating vertical padding, but not
-            // horizontal.
-            setPadding(paddingPx.toInt(), 0, paddingPx.toInt(), 0)
-
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, max(textArea.textSize - paddingPx, 1f))
-
-            setOnClickListener {
-              val preferences = TextbenderPreferences.createFromContext(context)
-              Textbender.handleText(context, preferences, preferences.tapDestination, textArea.text)
-              onQuit()
-            }
-
-            setOnLongClickListener {
-              val preferences = TextbenderPreferences.createFromContext(context)
-              Textbender.handleText(
-                context,
-                preferences,
-                preferences.longPressDestination,
-                textArea.text
-              )
-              onQuit()
-              true
-            }
-          }
         )
       }
     }
