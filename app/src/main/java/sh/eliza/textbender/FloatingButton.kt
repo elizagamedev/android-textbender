@@ -19,7 +19,9 @@ class FloatingButton(private val service: TextbenderService) : AutoCloseable {
         onLongClick()
         !isDragging
       }
-      setOnTouchListener { _, event ->
+      // Suppress this lint because this onTouch does not generate "clicks".
+      setOnTouchListener @Suppress("ClickableViewAccessibility")
+      { _, event ->
         onTouch(event)
         false
       }

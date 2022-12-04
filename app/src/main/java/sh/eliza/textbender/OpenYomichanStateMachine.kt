@@ -30,7 +30,7 @@ class OpenYomichanStateMachine(
       // On some devices (Boox Nova Air in my case), the window's title appears to be "stale" unless
       // we query the root first, so do a mostly unnecessary check for the root window in this loop.
       val root =
-        service.windows.firstOrNull { it?.root !== null && it?.title == "Kiwi Browser" }?.root
+        service.windows.firstOrNull { it?.root !== null && it.title == "Kiwi Browser" }?.root
       if (root === null) {
         return this
       }

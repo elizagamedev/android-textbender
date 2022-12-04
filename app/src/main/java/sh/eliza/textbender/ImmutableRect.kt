@@ -27,7 +27,7 @@ class ImmutableRect(private val rect: Rect) {
 
   fun intersect(other: ImmutableRect) =
     if (intersects(other)) {
-      ImmutableRect(Rect().apply { setIntersect(rect, other.rect) })
+      ImmutableRect(Rect().apply { @Suppress("CheckResult") setIntersect(rect, other.rect) })
     } else {
       null
     }

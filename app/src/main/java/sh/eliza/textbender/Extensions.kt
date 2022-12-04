@@ -2,6 +2,7 @@ package sh.eliza.textbender
 
 import android.graphics.Rect
 import android.graphics.RectF
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -28,13 +29,19 @@ val AccessibilityNodeInfo.boundsInScreen: ImmutableRect
   get() = ImmutableRect(Rect().apply { getBoundsInScreen(this) })
 
 val AccessibilityNodeInfo.textSizeInPx: Float?
-  get() {
-    refreshWithExtraData(AccessibilityNodeInfo.EXTRA_DATA_RENDERING_INFO_KEY, Bundle())
-    return extraRenderingInfo?.textSizeInPx
-  }
+  get() =
+    if (Build.VERSION.SDK_INT >= 30) {
+      refreshWithExtraData(AccessibilityNodeInfo.EXTRA_DATA_RENDERING_INFO_KEY, Bundle())
+      extraRenderingInfo?.textSizeInPx
+    } else {
+      null
+    }
 
 val AccessibilityNodeInfo.textBounds: ImmutableRect?
   get() {
+    if (Build.VERSION.SDK_INT < 31) {
+      return null
+    }
     refreshWithExtraData(
       AccessibilityNodeInfo.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
       Bundle().apply {
@@ -46,10 +53,18 @@ val AccessibilityNodeInfo.textBounds: ImmutableRect?
       }
     )
     val array =
-      extras.getParcelableArray(
-        AccessibilityNodeInfo.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
-        RectF::class.java
-      )
+      if (Build.VERSION.SDK_INT >= 33) {
+        extras.getParcelableArray(
+          AccessibilityNodeInfo.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
+          RectF::class.java
+        )
+      } else {
+        @Suppress("DEPRECATION")
+        extras
+          .getParcelableArray(AccessibilityNodeInfo.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY)
+          ?.map { it as RectF }
+          ?.toTypedArray()
+      }
     if (array === null || array.all { it === null }) {
       return null
     }

@@ -2,7 +2,7 @@
   <style name="button_textarea" parent="@android:style/Widget.Button">
     <item name="android:gravity">center_vertical</item>
     <item name="android:textColor">#FF000000</item>
-    <item name="android:textSize">32dp</item>
+    <item name="android:textSize">32sp</item>
     <item name="android:textStyle">normal</item>
     <item name="android:background">@drawable/button_textarea</item>
     <item name="android:focusable">true</item>

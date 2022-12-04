@@ -137,6 +137,7 @@ class Snapshot(
         )
       setOnTouchListener { _, _ ->
         onQuit()
+        performClick()
         true
       }
       viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)

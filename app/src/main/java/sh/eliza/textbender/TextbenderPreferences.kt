@@ -78,7 +78,7 @@ data class TextbenderPreferences(
         .edit()
         .putInt("floating_button_x", x)
         .putInt("floating_button_y", y)
-        .commit()
+        .apply()
     }
 
     private fun SharedPreferences.getDestination(key: String) =

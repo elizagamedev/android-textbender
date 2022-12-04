@@ -17,7 +17,6 @@
     Textbender’s README for more information.
   </string>
 
-  <string name="title_activity_settings">Textbender Settings</string>
   <string name="could_not_open_kiwi_browser">Could not open Kiwi Browser.</string>
   <string name="could_not_access_accessibility_service">Could not access Textbender accessibility service.</string>
 

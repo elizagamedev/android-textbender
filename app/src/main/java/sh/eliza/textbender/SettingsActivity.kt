@@ -79,7 +79,7 @@ class SettingsActivity : AppCompatActivity() {
     override fun onResume() {
       super.onResume()
 
-      val context = context!!
+      val context = requireContext()
 
       accessibilityPreference.setChecked(
         try {
