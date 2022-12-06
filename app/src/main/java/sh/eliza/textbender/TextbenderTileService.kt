@@ -7,7 +7,12 @@ import android.service.quicksettings.TileService
 
 abstract class TextbenderTileService : TileService() {
   protected lateinit var preferences: TextbenderPreferences
-  protected var preferencesSnapshot: TextbenderPreferences.Snapshot? = null
+  protected var preferencesSnapshot: TextbenderPreferences.Snapshot
+    get() = preferencesSnapshotField ?: preferences.defaults
+    set(value) {
+      preferencesSnapshotField = value
+    }
+  private var preferencesSnapshotField: TextbenderPreferences.Snapshot? = null
   protected var serviceInstance: TextbenderService? = null
 
   private val handler = Handler(Looper.getMainLooper())
@@ -25,7 +30,7 @@ abstract class TextbenderTileService : TileService() {
       qsTile.subtitle = getString(R.string.app_name)
     }
 
-    preferences.registerOnChangeListener(this::onPreferenceChanged)
+    preferences.addOnChangeListener(this::onPreferenceChanged, handler)
     TextbenderService.addOnInstanceChangedListener(this::onServiceInstanceChanged, handler)
 
     preferencesSnapshot = preferences.snapshot
@@ -37,15 +42,12 @@ abstract class TextbenderTileService : TileService() {
     super.onStopListening()
 
     TextbenderService.removeOnInstanceChangedListener(this::onServiceInstanceChanged)
-    preferences.unregisterOnChangeListener(this::onPreferenceChanged)
+    preferences.removeOnChangeListener(this::onPreferenceChanged)
   }
 
-  private fun onPreferenceChanged() {
-    val preferencesSnapshot = preferences.snapshot
-    handler.post {
-      this.preferencesSnapshot = preferencesSnapshot
-      updateState()
-    }
+  private fun onPreferenceChanged(preferencesSnapshot: TextbenderPreferences.Snapshot) {
+    this.preferencesSnapshot = preferencesSnapshot
+    updateState()
   }
 
   private fun onServiceInstanceChanged(serviceInstance: TextbenderService?) {

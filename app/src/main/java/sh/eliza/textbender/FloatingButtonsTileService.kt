@@ -7,9 +7,9 @@ private const val TAG = "FloatingButtonsTileService"
 class FloatingButtonsTileService : TextbenderTileService() {
   override val desiredState: Int
     get() =
-      if (serviceInstance === null) {
+      if (serviceInstance === null || preferencesSnapshot.floatingButtonsEmpty) {
         Tile.STATE_UNAVAILABLE
-      } else if (preferencesSnapshot?.floatingButtonsEnabled ?: false) {
+      } else if (preferencesSnapshot.floatingButtonsEnabled) {
         Tile.STATE_ACTIVE
       } else {
         Tile.STATE_INACTIVE

@@ -6,7 +6,6 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import java.util.concurrent.ConcurrentHashMap
@@ -22,19 +21,20 @@ class TextbenderService : AccessibilityService() {
   lateinit var windowManager: WindowManager
 
   private var snapshot: Snapshot? = null
+  private var previousPreferencesSnapshot: TextbenderPreferences.Snapshot? = null
   private val openYomichanStateMachine = AtomicReference<OpenYomichanStateMachine>()
 
-  private var floatingButton: FloatingButton? = null
+  private var floatingButtons: FloatingButtons? = null
 
   override fun onCreate() {
     super.onCreate()
     preferences = TextbenderPreferences.getInstance(applicationContext)
+    previousPreferencesSnapshot = preferences.snapshot
     windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
   }
 
   override fun onServiceConnected() {
     atomicInstance.set(this)
-    Log.i(TAG, "listeners: ${onInstanceChangedListeners.size}")
     for ((listener, listenerHandler) in onInstanceChangedListeners) {
       listenerHandler.post { listener(this) }
     }
@@ -54,13 +54,13 @@ class TextbenderService : AccessibilityService() {
       }
     )
 
-    handler.post { resetFloatingButton() }
+    handler.post { resetFloatingButton(preferences.snapshot) }
 
-    preferences.registerOnChangeListener(this::onPreferenceChange)
+    preferences.addOnChangeListener(this::onPreferenceChange, handler)
   }
 
   override fun onUnbind(intent: Intent): Boolean {
-    preferences.unregisterOnChangeListener(this::onPreferenceChange)
+    preferences.removeOnChangeListener(this::onPreferenceChange)
     handlerThread.run {
       quitSafely()
       join()
@@ -77,7 +77,7 @@ class TextbenderService : AccessibilityService() {
   override fun onDestroy() {
     super.onDestroy()
     snapshot?.close()
-    floatingButton?.close()
+    floatingButtons?.close()
   }
 
   override fun onAccessibilityEvent(event: AccessibilityEvent) {}
@@ -96,8 +96,9 @@ class TextbenderService : AccessibilityService() {
     }
   }
 
-  private fun onPreferenceChange() {
-    handler.post { resetFloatingButton() }
+  private fun onPreferenceChange(preferencesSnapshot: TextbenderPreferences.Snapshot) {
+    resetFloatingButton(preferencesSnapshot)
+    previousPreferencesSnapshot = preferencesSnapshot
   }
 
   private fun handleOpenYomichan(text: CharSequence) {
@@ -112,26 +113,34 @@ class TextbenderService : AccessibilityService() {
   }
 
   private fun handleOpenOverlay() {
-    floatingButton?.close()
-    floatingButton = null
+    floatingButtons?.close()
+    floatingButtons = null
     snapshot?.close()
     snapshot =
       Snapshot(applicationContext, windowManager, windows) {
         this.snapshot?.close()
         this.snapshot = null
-        resetFloatingButton()
+        resetFloatingButton(preferences.snapshot)
       }
   }
 
-  private fun resetFloatingButton() {
-    val enabled = preferences.snapshot.floatingButtonsEnabled
-    if (enabled) {
-      if (floatingButton === null) {
-        floatingButton = FloatingButton(this)
+  private fun resetFloatingButton(preferencesSnapshot: TextbenderPreferences.Snapshot) {
+    val previousPreferencesSnapshot = previousPreferencesSnapshot ?: preferences.defaults
+    val enabled =
+      preferencesSnapshot.floatingButtonsEnabled && !preferencesSnapshot.floatingButtonsEmpty
+    val changed =
+      preferencesSnapshot.floatingButtonOverlayEnabled !=
+        previousPreferencesSnapshot.floatingButtonOverlayEnabled ||
+        preferencesSnapshot.floatingButtonClipboardEnabled !=
+          previousPreferencesSnapshot.floatingButtonClipboardEnabled ||
+        (enabled && floatingButtons === null) ||
+        (!enabled && floatingButtons !== null)
+    if (changed) {
+      floatingButtons?.close()
+      floatingButtons = null
+      if (enabled) {
+        floatingButtons = FloatingButtons(this)
       }
-    } else {
-      floatingButton?.close()
-      floatingButton = null
     }
   }
 
