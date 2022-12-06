@@ -85,6 +85,7 @@
         android:name=".DummyActivity"
         android:exported="true"
         android:noHistory="true"
+        android:autoRemoveFromRecents="true"
         android:theme="@android:style/Theme.NoDisplay">
     </activity>
 

@@ -11,9 +11,10 @@ import kotlin.concurrent.withLock
 private val instanceLock = ReentrantLock()
 private var instance: TextbenderPreferences? = null
 
-class TextbenderPreferences(
-  private val context: Context,
+class TextbenderPreferences
+private constructor(
   private val preferences: SharedPreferences,
+  private val defaultUrlFormat: String,
 ) {
   enum class Destination {
     DISABLED,
@@ -55,6 +56,9 @@ class TextbenderPreferences(
       val globalContextMenuDestination =
         preferences.getDestination("global_context_menu_destination")
       val shareDestination = preferences.getDestination("share_destination")
+      if (shareDestination === Destination.SHARE) {
+        throw IllegalArgumentException()
+      }
       val urlDestination = preferences.getDestination("url_destination")
       val clipboardDestination = preferences.getDestination("clipboard_destination")
       if (clipboardDestination === Destination.CLIPBOARD) {
@@ -62,8 +66,7 @@ class TextbenderPreferences(
       }
 
       // Destionation Options
-      val urlFormat =
-        preferences.getString("url_format", null) ?: context.getString(R.string.url_format_default)
+      val urlFormat = preferences.getString("url_format", null) ?: defaultUrlFormat
 
       // Hidden Options
       val floatingButtonsX = preferences.getInt("floating_buttons_x", 0)
@@ -98,18 +101,11 @@ class TextbenderPreferences(
   }
 
   fun putFloatingButtonEnabled(enabled: Boolean) {
-    PreferenceManager.getDefaultSharedPreferences(context)
-      .edit()
-      .putBoolean("floating_buttons", enabled)
-      .apply()
+    preferences.edit().putBoolean("floating_buttons", enabled).apply()
   }
 
   fun putFloatingButtonPosition(x: Int, y: Int) {
-    PreferenceManager.getDefaultSharedPreferences(context)
-      .edit()
-      .putInt("floating_buttons_x", x)
-      .putInt("floating_buttons_y", y)
-      .apply()
+    preferences.edit().putInt("floating_buttons_x", x).putInt("floating_buttons_y", y).apply()
   }
 
   private fun SharedPreferences.getDestination(key: String) =
@@ -127,10 +123,11 @@ class TextbenderPreferences(
       instanceLock.withLock {
         val thisInstance = instance
         if (thisInstance === null) {
+          val defaultUrlFormat = context.getString(R.string.url_format_default)
           val newInstance =
             TextbenderPreferences(
-              context,
               PreferenceManager.getDefaultSharedPreferences(context),
+              defaultUrlFormat
             )
           instance = newInstance
           newInstance

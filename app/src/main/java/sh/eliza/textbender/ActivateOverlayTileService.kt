@@ -1,31 +1,17 @@
 package sh.eliza.textbender
 
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import android.service.quicksettings.Tile
-import android.service.quicksettings.TileService
 import android.widget.Toast
 
-class ActivateOverlayTileService : TileService() {
-  private var serviceInstance: TextbenderService? = null
-  private val handler = Handler(Looper.getMainLooper())
-
-  override fun onStartListening() {
-    super.onStartListening()
-    qsTile.subtitle = getString(R.string.app_name)
-
-    TextbenderService.addOnInstanceChangedListener(this::onServiceInstanceChanged, handler)
-
-    serviceInstance = TextbenderService.instance
-    updateState()
-  }
-
-  override fun onStopListening() {
-    super.onStopListening()
-
-    TextbenderService.removeOnInstanceChangedListener(this::onServiceInstanceChanged)
-  }
+class ActivateOverlayTileService : TextbenderTileService() {
+  override val desiredState: Int
+    get() =
+      if (serviceInstance === null) {
+        Tile.STATE_UNAVAILABLE
+      } else {
+        Tile.STATE_INACTIVE
+      }
 
   override fun onClick() {
     super.onClick()
@@ -42,23 +28,6 @@ class ActivateOverlayTileService : TileService() {
           Toast.LENGTH_LONG
         )
         .show()
-    }
-  }
-
-  private fun onServiceInstanceChanged(serviceInstance: TextbenderService?) {
-    this.serviceInstance = serviceInstance
-    updateState()
-  }
-
-  private fun updateState() {
-    qsTile.run {
-      state =
-        if (serviceInstance === null) {
-          Tile.STATE_UNAVAILABLE
-        } else {
-          Tile.STATE_INACTIVE
-        }
-      updateTile()
     }
   }
 }
