@@ -69,6 +69,7 @@
         android:name=".ProcessTextActivity"
         android:exported="true"
         android:noHistory="true"
+        android:autoRemoveFromRecents="true"
         android:theme="@android:style/Theme.NoDisplay">
     </activity>
 
@@ -76,9 +77,9 @@
         android:name=".BendClipboardActivity"
         android:label=""
         android:exported="true"
-        android:noHistory="true">
+        android:noHistory="true"
+        android:autoRemoveFromRecents="true">
     </activity>
-
 
     <activity
         android:name=".DummyActivity"
@@ -105,9 +106,6 @@
         android:label="@string/qs_bend_clipboard"
         android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
         android:exported="true">
-      <meta-data
-          android:name="android.service.quicksettings.ACTIVE_TILE"
-          android:value="true" />
       <intent-filter>
         <action android:name="android.service.quicksettings.action.QS_TILE" />
       </intent-filter>
@@ -118,22 +116,16 @@
         android:label="@string/qs_activate_overlay"
         android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
         android:exported="true">
-      <meta-data
-          android:name="android.service.quicksettings.ACTIVE_TILE"
-          android:value="true" />
       <intent-filter>
         <action android:name="android.service.quicksettings.action.QS_TILE" />
       </intent-filter>
     </service>
 
     <service
-        android:name=".ToggleOverlayButtonTileService"
-        android:label="@string/qs_toggle_overlay_button"
+        android:name=".FloatingButtonsTileService"
+        android:label="@string/qs_floating_buttons"
         android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
         android:exported="true">
-      <meta-data
-          android:name="android.service.quicksettings.ACTIVE_TILE"
-          android:value="true" />
       <meta-data
           android:name="android.service.quicksettings.TOGGLEABLE_TILE"
           android:value="true" />

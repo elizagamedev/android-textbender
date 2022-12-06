@@ -6,13 +6,13 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Log
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
 
 private const val TAG = "TextbenderService"
-
-private val atomicInstance = AtomicReference<TextbenderService>()
 
 class TextbenderService : AccessibilityService() {
   private val handlerThread = HandlerThread(TAG).apply { start() }
@@ -34,6 +34,10 @@ class TextbenderService : AccessibilityService() {
 
   override fun onServiceConnected() {
     atomicInstance.set(this)
+    Log.i(TAG, "listeners: ${onInstanceChangedListeners.size}")
+    for ((listener, listenerHandler) in onInstanceChangedListeners) {
+      listenerHandler.post { listener(this) }
+    }
 
     accessibilityButtonController.registerAccessibilityButtonCallback(
       object : AccessibilityButtonCallback() {
@@ -63,7 +67,11 @@ class TextbenderService : AccessibilityService() {
       quitSafely()
       join()
     }
-    atomicInstance.compareAndSet(this, null)
+    if (atomicInstance.compareAndSet(this, null)) {
+      for ((listener, listenerHandler) in onInstanceChangedListeners) {
+        listenerHandler.post { listener(null) }
+      }
+    }
     openYomichanStateMachine.getAndSet(null)?.close()
     return false
   }
@@ -132,5 +140,17 @@ class TextbenderService : AccessibilityService() {
   companion object {
     val instance: TextbenderService?
       get() = atomicInstance.get()
+
+    private val atomicInstance = AtomicReference<TextbenderService>()
+    private val onInstanceChangedListeners =
+      ConcurrentHashMap<(TextbenderService?) -> Unit, Handler>()
+
+    fun addOnInstanceChangedListener(listener: (TextbenderService?) -> Unit, handler: Handler) {
+      onInstanceChangedListeners.put(listener, handler)
+    }
+
+    fun removeOnInstanceChangedListener(listener: (TextbenderService?) -> Unit) {
+      onInstanceChangedListeners.remove(listener)
+    }
   }
 }

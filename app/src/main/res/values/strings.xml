@@ -58,5 +58,5 @@
   <!-- Quick settings tiles -->
   <string name="qs_bend_clipboard">Bend clipboard</string>
   <string name="qs_activate_overlay">Activate overlay</string>
-  <string name="qs_toggle_overlay_button">Toggle overlay button</string>
+  <string name="qs_floating_buttons">Floating buttons</string>
 </resources>
