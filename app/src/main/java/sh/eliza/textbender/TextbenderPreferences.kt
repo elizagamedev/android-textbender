@@ -29,6 +29,7 @@ private constructor(
 
   data class Snapshot(
     val floatingButtonsEnabled: Boolean,
+    val floatingButtonsOpacity: Int,
     val floatingButtonOverlayEnabled: Boolean,
     val floatingButtonClipboardEnabled: Boolean,
     val tapDestination: Destination,
@@ -90,6 +91,8 @@ private constructor(
     // UI Options
     val floatingButtonsEnabled =
       preferences.getBoolean("floating_buttons", defaults.floatingButtonsEnabled)
+    val floatingButtonsOpacity =
+      preferences.getInt("floating_buttons_opacity", defaults.floatingButtonsOpacity)
     val floatingButtonOverlayEnabled =
       preferences.getBoolean("floating_button_overlay", defaults.floatingButtonOverlayEnabled)
     val floatingButtonClipboardEnabled =
@@ -125,6 +128,7 @@ private constructor(
 
     return Snapshot(
       floatingButtonsEnabled,
+      floatingButtonsOpacity,
       floatingButtonOverlayEnabled,
       floatingButtonClipboardEnabled,
       tapDestination,
@@ -159,6 +163,8 @@ private constructor(
           val defaults =
             Snapshot(
               floatingButtonsEnabled = false,
+              floatingButtonsOpacity =
+                Integer.parseInt(context.getString(R.string.floating_buttons_opacity_default)),
               floatingButtonOverlayEnabled = false,
               floatingButtonClipboardEnabled = false,
               tapDestination = Destination.DISABLED,

@@ -5,7 +5,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="#000000"
-    android:alpha="0.85"
     android:orientation="vertical">
 
   <ImageButton

@@ -29,7 +29,7 @@ class TextbenderService : AccessibilityService() {
   override fun onCreate() {
     super.onCreate()
     preferences = TextbenderPreferences.getInstance(applicationContext)
-    previousPreferencesSnapshot = preferences.snapshot
+    previousPreferencesSnapshot = preferences.defaults
     windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
   }
 
@@ -133,6 +133,8 @@ class TextbenderService : AccessibilityService() {
         previousPreferencesSnapshot.floatingButtonOverlayEnabled ||
         preferencesSnapshot.floatingButtonClipboardEnabled !=
           previousPreferencesSnapshot.floatingButtonClipboardEnabled ||
+        preferencesSnapshot.floatingButtonsOpacity !=
+          previousPreferencesSnapshot.floatingButtonsOpacity ||
         (enabled && floatingButtons === null) ||
         (!enabled && floatingButtons !== null)
     if (changed) {

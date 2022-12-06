@@ -33,6 +33,9 @@
   <!-- Floating buttons -->
   <string name="floating_buttons_title">Floating buttons</string>
   <string name="floating_buttons_summary">Shows floating buttons to conveniently activate features.</string>
+  <string name="floating_buttons_opacity_title">Opacity</string>
+  <string name="floating_buttons_opacity_summary">Opacity of floating buttons.</string>
+  <string name="floating_buttons_opacity_default" translatable="false">85</string>
   <string name="floating_button_overlay_title">Activate overlay button</string>
   <string name="floating_button_overlay_summary">Button which activates the overlay.</string>
   <string name="floating_button_clipboard_title">Bend clipboard button</string>

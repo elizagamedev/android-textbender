@@ -28,6 +28,8 @@ class FloatingButtons(private val service: TextbenderService) : AutoCloseable {
   init {
     val preferencesSnapshot = preferences.snapshot
 
+    root.alpha = preferencesSnapshot.floatingButtonsOpacity / 100f
+
     overlayButton.run {
       setOnClickListener { _ -> onClickOverlayButton() }
       if (!preferencesSnapshot.floatingButtonOverlayEnabled) {
