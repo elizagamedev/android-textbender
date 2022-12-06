@@ -17,7 +17,6 @@ data class TextbenderPreferences(
   val shareDestination: Destination,
   val urlDestination: Destination,
   val clipboardDestination: Destination,
-  val clipboardRegexp: String,
   val urlFormat: String,
   // Hidden preferences
   val floatingButtonX: Int,
@@ -46,15 +45,10 @@ data class TextbenderPreferences(
         preferences.getDestination("global_context_menu_destination")
       val shareDestination = preferences.getDestination("share_destination")
       val urlDestination = preferences.getDestination("url_destination")
-      val clipboardDestination = preferences.getDestination("clipboard")
+      val clipboardDestination = preferences.getDestination("clipboard_destination")
       if (clipboardDestination === Destination.CLIPBOARD) {
         throw IllegalArgumentException()
       }
-
-      // Source Options
-      val clipboardRegexp =
-        preferences.getString("clipboard_regexp", null)
-          ?: context.getString(R.string.clipboard_regexp_default)
 
       // Destionation Options
       val urlFormat =
@@ -73,7 +67,6 @@ data class TextbenderPreferences(
         shareDestination,
         urlDestination,
         clipboardDestination,
-        clipboardRegexp,
         urlFormat,
         floatingButtonX,
         floatingButtonY
@@ -94,7 +87,14 @@ data class TextbenderPreferences(
       }
     }
 
-    fun putFloatingButton(context: Context, x: Int, y: Int) {
+    fun putFloatingButtonEnabled(context: Context, enabled: Boolean) {
+      PreferenceManager.getDefaultSharedPreferences(context)
+        .edit()
+        .putBoolean("floating_button", enabled)
+        .apply()
+    }
+
+    fun putFloatingButtonPosition(context: Context, x: Int, y: Int) {
       PreferenceManager.getDefaultSharedPreferences(context)
         .edit()
         .putInt("floating_button_x", x)

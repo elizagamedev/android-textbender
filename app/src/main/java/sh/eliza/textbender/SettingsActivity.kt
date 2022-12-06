@@ -79,9 +79,6 @@ class SettingsActivity : AppCompatActivity() {
         urlComponentName
       )
 
-      findPreference<EditTextPreference>("clipboard_regexp")!!.setOnBindEditTextListener {
-        it.hint = getString(R.string.clipboard_regexp_default)
-      }
       findPreference<EditTextPreference>("url_format")!!.setOnBindEditTextListener {
         it.hint = getString(R.string.url_format_default)
       }

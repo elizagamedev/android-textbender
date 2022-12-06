@@ -111,7 +111,7 @@ class FloatingButton(private val service: TextbenderService) : AutoCloseable {
         }
       }
       MotionEvent.ACTION_UP -> {
-        TextbenderPreferences.putFloatingButton(
+        TextbenderPreferences.putFloatingButtonPosition(
           service.applicationContext,
           layoutParams.x,
           layoutParams.y

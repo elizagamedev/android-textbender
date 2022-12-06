@@ -24,7 +24,6 @@
   <string name="permissions_header">Permissions</string>
   <string name="ui_options_header">UI options</string>
   <string name="mappings_header">Mappings</string>
-  <string name="source_options_header">Source options</string>
   <string name="destination_options_header">Destination options</string>
 
   <!-- Permissions -->
@@ -45,12 +44,6 @@
   <string name="url_destination_title">URL scheme</string>
   <string name="clipboard_destination_title">Clipboard</string>
 
-  <!-- Source Options -->
-  <string name="clipboard_regexp_title">Clipboard regular expression</string>
-  <string name="clipboard_regexp_default" translatable="false">
-    .*[\\u3400-\\u4dbf\\u4e00-\\u9fff\\uf900-\\ufaff\\u3040-\\u309f\\u30a0-\\u30ffー].*
-  </string>
-
   <!-- Destination Options -->
   <string name="url_format_title">URL format</string>
   <string name="url_format_default" translatable="false">https://duckduckgo.com/?q={text}</string>
@@ -61,4 +54,9 @@
   <string name="destination_url">Open URL</string>
   <string name="destination_share">Share</string>
   <string name="destination_yomichan">Open in Yomichan via Kiwi Browser</string>
+
+  <!-- Quick settings tiles -->
+  <string name="qs_bend_clipboard">Bend clipboard</string>
+  <string name="qs_activate_overlay">Activate overlay</string>
+  <string name="qs_toggle_overlay_button">Toggle overlay button</string>
 </resources>

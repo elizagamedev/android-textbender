@@ -12,6 +12,26 @@ import java.net.URLEncoder
 private const val TAG = "Textbender"
 
 object Textbender {
+  fun bendClipboard(context: Context) {
+    val preferences = TextbenderPreferences.createFromContext(context)
+    val text =
+      (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
+        .primaryClip
+        ?.getItemAt(0)
+        ?.coerceToText(context)
+    if (preferences.clipboardDestination == TextbenderPreferences.Destination.DISABLED) {
+      context.startActivity(
+        Intent(context, SettingsActivity::class.java).apply {
+          flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+      )
+    } else {
+      if (!text.isNullOrEmpty()) {
+        handleText(context, preferences, preferences.clipboardDestination, text)
+      }
+    }
+  }
+
   fun handleText(
     context: Context,
     preferences: TextbenderPreferences,

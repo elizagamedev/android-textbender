@@ -79,16 +79,6 @@
 
   </PreferenceCategory>
 
-  <PreferenceCategory app:title="@string/source_options_header">
-
-    <EditTextPreference
-        app:key="clipboard_regexp"
-        app:title="@string/clipboard_regexp_title"
-        app:defaultValue="@string/clipboard_regexp_default"
-        app:useSimpleSummaryProvider="true" />
-
-  </PreferenceCategory>
-
   <PreferenceCategory app:title="@string/destination_options_header">
 
     <EditTextPreference

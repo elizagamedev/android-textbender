@@ -84,8 +84,12 @@ class TextbenderService : AccessibilityService() {
     handler.post { handleOpenYomichan(text) }
   }
 
-  fun openOverlay() {
-    handler.post { handleOpenOverlay() }
+  fun openOverlay(delayMs: Long = 0L) {
+    if (delayMs <= 0) {
+      handler.post(this::handleOpenOverlay)
+    } else {
+      handler.postDelayed(this::handleOpenOverlay, delayMs)
+    }
   }
 
   private fun handleOpenYomichan(text: CharSequence) {
