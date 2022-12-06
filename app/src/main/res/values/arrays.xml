@@ -1,14 +1,44 @@
 <resources>
   <!-- Destination Method Preference -->
   <string-array name="destination_entries">
-    <item>Copy to clipboard</item>
-    <item>Open URL</item>
-    <item>Share</item>
-    <item>Open in Yomichan via Kiwi Browser</item>
+    <item>@string/destination_disabled</item>
+    <item>@string/destination_clipboard</item>
+    <item>@string/destination_url</item>
+    <item>@string/destination_share</item>
+    <item>@string/destination_yomichan</item>
   </string-array>
 
   <string-array name="destination_values">
+    <item>disabled</item>
     <item>clipboard</item>
+    <item>url</item>
+    <item>share</item>
+    <item>yomichan</item>
+  </string-array>
+
+  <string-array name="share_destination_entries">
+    <item>@string/destination_disabled</item>
+    <item>@string/destination_clipboard</item>
+    <item>@string/destination_url</item>
+    <item>@string/destination_yomichan</item>
+  </string-array>
+
+  <string-array name="share_destination_values">
+    <item>disabled</item>
+    <item>clipboard</item>
+    <item>url</item>
+    <item>yomichan</item>
+  </string-array>
+
+  <string-array name="clipboard_destination_entries">
+    <item>@string/destination_disabled</item>
+    <item>@string/destination_url</item>
+    <item>@string/destination_share</item>
+    <item>@string/destination_yomichan</item>
+  </string-array>
+
+  <string-array name="clipboard_destination_values">
+    <item>disabled</item>
     <item>url</item>
     <item>share</item>
     <item>yomichan</item>

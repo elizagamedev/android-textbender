@@ -8,6 +8,8 @@ import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference.OnPreferenceChangeListener
 import androidx.preference.Preference.OnPreferenceClickListener
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -64,16 +66,25 @@ class SettingsActivity : AppCompatActivity() {
             true
           }
 
-          findPreference<SwitchPreferenceCompat>("global_context_menu")!!.setAsComponentSwitch(
-            globalContextMenuComponentName
-          )
-          findPreference<SwitchPreferenceCompat>("share")!!.setAsComponentSwitch(shareComponentName)
-          findPreference<SwitchPreferenceCompat>("url")!!.setAsComponentSwitch(urlComponentName)
-
-          findPreference<EditTextPreference>("url_format")!!.setOnBindEditTextListener {
-            it.hint = getString(R.string.url_format_default)
-          }
+          onPreferenceChangeListener = OnPreferenceChangeListener { _, _ -> false }
         }
+
+      findPreference<ListPreference>("global_context_menu_destination")!!.setAsComponentDestination(
+        globalContextMenuComponentName
+      )
+      findPreference<ListPreference>("share_destination")!!.setAsComponentDestination(
+        shareComponentName
+      )
+      findPreference<ListPreference>("url_destination")!!.setAsComponentDestination(
+        urlComponentName
+      )
+
+      findPreference<EditTextPreference>("clipboard_regexp")!!.setOnBindEditTextListener {
+        it.hint = getString(R.string.clipboard_regexp_default)
+      }
+      findPreference<EditTextPreference>("url_format")!!.setOnBindEditTextListener {
+        it.hint = getString(R.string.url_format_default)
+      }
     }
 
     override fun onResume() {
@@ -99,31 +110,21 @@ class SettingsActivity : AppCompatActivity() {
       )
     }
 
-    private fun SwitchPreferenceCompat.setAsComponentSwitch(componentName: ComponentName) {
-      setPersistent(false)
+    private fun ListPreference.setAsComponentDestination(componentName: ComponentName) {
+      onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
+        val enabled = newValue as String != "disabled"
+        packageManager.setComponentEnabledSetting(
+          componentName,
+          if (enabled) {
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+          } else {
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+          },
+          PackageManager.DONT_KILL_APP
+        )
 
-      setChecked(isComponentEnabled(componentName))
-
-      onPreferenceClickListener = OnPreferenceClickListener {
-        setComponentEnabled(componentName, isChecked())
         true
       }
-    }
-
-    private fun isComponentEnabled(componentName: ComponentName) =
-      packageManager.getComponentEnabledSetting(componentName) ==
-        PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-
-    private fun setComponentEnabled(componentName: ComponentName, enabled: Boolean) {
-      packageManager.setComponentEnabledSetting(
-        componentName,
-        if (enabled) {
-          PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-        } else {
-          PackageManager.COMPONENT_ENABLED_STATE_DISABLED
-        },
-        PackageManager.DONT_KILL_APP
-      )
     }
   }
 }

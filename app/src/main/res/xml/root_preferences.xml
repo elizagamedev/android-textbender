@@ -9,7 +9,7 @@
 
   </PreferenceCategory>
 
-  <PreferenceCategory app:title="@string/sources_header">
+  <PreferenceCategory app:title="@string/ui_options_header">
 
     <SwitchPreferenceCompat
         app:key="accessibility_shortcut"
@@ -23,28 +23,13 @@
         app:summary="@string/floating_button_summary"
         app:dependency="accessibility" />
 
-    <SwitchPreferenceCompat
-        app:key="global_context_menu"
-        app:title="@string/global_context_menu_title"
-        app:summary="@string/global_context_menu_summary" />
-
-    <SwitchPreferenceCompat
-        app:key="share"
-        app:title="@string/share_title"
-        app:summary="@string/share_summary" />
-
-    <SwitchPreferenceCompat
-        app:key="url"
-        app:title="@string/url_title"
-        app:summary="@string/url_summary" />
-
   </PreferenceCategory>
 
-  <PreferenceCategory app:title="@string/destinations_header">
+  <PreferenceCategory app:title="@string/mappings_header">
 
     <ListPreference
         app:key="tap_destination"
-        app:defaultValue="clipboard"
+        app:defaultValue="disabled"
         app:entries="@array/destination_entries"
         app:entryValues="@array/destination_values"
         app:title="@string/tap_destination_title"
@@ -53,7 +38,7 @@
 
     <ListPreference
         app:key="long_press_destination"
-        app:defaultValue="clipboard"
+        app:defaultValue="disabled"
         app:entries="@array/destination_entries"
         app:entryValues="@array/destination_values"
         app:title="@string/long_press_destination_title"
@@ -62,7 +47,7 @@
 
     <ListPreference
         app:key="global_context_menu_destination"
-        app:defaultValue="clipboard"
+        app:defaultValue="disabled"
         app:entries="@array/destination_entries"
         app:entryValues="@array/destination_values"
         app:title="@string/global_context_menu_destination_title"
@@ -70,23 +55,41 @@
 
     <ListPreference
         app:key="share_destination"
-        app:defaultValue="clipboard"
-        app:entries="@array/destination_entries"
-        app:entryValues="@array/destination_values"
+        app:defaultValue="disabled"
+        app:entries="@array/share_destination_entries"
+        app:entryValues="@array/share_destination_values"
         app:title="@string/share_destination_title"
         app:useSimpleSummaryProvider="true" />
 
     <ListPreference
         app:key="url_destination"
-        app:defaultValue="clipboard"
+        app:defaultValue="disabled"
         app:entries="@array/destination_entries"
         app:entryValues="@array/destination_values"
         app:title="@string/url_destination_title"
         app:useSimpleSummaryProvider="true" />
 
+    <ListPreference
+        app:key="clipboard_destination"
+        app:defaultValue="disabled"
+        app:entries="@array/clipboard_destination_entries"
+        app:entryValues="@array/clipboard_destination_values"
+        app:title="@string/clipboard_destination_title"
+        app:useSimpleSummaryProvider="true" />
+
   </PreferenceCategory>
 
-  <PreferenceCategory app:title="@string/url_header">
+  <PreferenceCategory app:title="@string/source_options_header">
+
+    <EditTextPreference
+        app:key="clipboard_regexp"
+        app:title="@string/clipboard_regexp_title"
+        app:defaultValue="@string/clipboard_regexp_default"
+        app:useSimpleSummaryProvider="true" />
+
+  </PreferenceCategory>
+
+  <PreferenceCategory app:title="@string/destination_options_header">
 
     <EditTextPreference
         app:key="url_format"

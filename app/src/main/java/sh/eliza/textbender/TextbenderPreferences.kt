@@ -16,12 +16,15 @@ data class TextbenderPreferences(
   val globalContextMenuDestination: Destination,
   val shareDestination: Destination,
   val urlDestination: Destination,
+  val clipboardDestination: Destination,
+  val clipboardRegexp: String,
   val urlFormat: String,
   // Hidden preferences
   val floatingButtonX: Int,
   val floatingButtonY: Int,
 ) {
   enum class Destination {
+    DISABLED,
     CLIPBOARD,
     URL,
     SHARE,
@@ -32,19 +35,35 @@ data class TextbenderPreferences(
     fun createFromContext(context: Context): TextbenderPreferences {
       val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
+      // UI Options
       val accessibilityShortcutEnabled = preferences.getBoolean("accessibility_shortcut", false)
       val floatingButtonEnabled = preferences.getBoolean("floating_button", false)
 
+      // Mappings
       val tapDestination = preferences.getDestination("tap_destination")
       val longPressDestination = preferences.getDestination("long_press_destination")
       val globalContextMenuDestination =
         preferences.getDestination("global_context_menu_destination")
       val shareDestination = preferences.getDestination("share_destination")
       val urlDestination = preferences.getDestination("url_destination")
+      val clipboardDestination = preferences.getDestination("clipboard")
+      if (clipboardDestination === Destination.CLIPBOARD) {
+        throw IllegalArgumentException()
+      }
+
+      // Source Options
+      val clipboardRegexp =
+        preferences.getString("clipboard_regexp", null)
+          ?: context.getString(R.string.clipboard_regexp_default)
+
+      // Destionation Options
       val urlFormat =
         preferences.getString("url_format", null) ?: context.getString(R.string.url_format_default)
+
+      // Hidden Options
       val floatingButtonX = preferences.getInt("floating_button_x", 0)
       val floatingButtonY = preferences.getInt("floating_button_y", 0)
+
       return TextbenderPreferences(
         accessibilityShortcutEnabled,
         floatingButtonEnabled,
@@ -53,6 +72,8 @@ data class TextbenderPreferences(
         globalContextMenuDestination,
         shareDestination,
         urlDestination,
+        clipboardDestination,
+        clipboardRegexp,
         urlFormat,
         floatingButtonX,
         floatingButtonY
@@ -82,7 +103,8 @@ data class TextbenderPreferences(
     }
 
     private fun SharedPreferences.getDestination(key: String) =
-      when (getString(key, "clipboard")) {
+      when (getString(key, "disabled")) {
+        "disabled" -> Destination.DISABLED
         "clipboard" -> Destination.CLIPBOARD
         "url" -> Destination.URL
         "share" -> Destination.SHARE

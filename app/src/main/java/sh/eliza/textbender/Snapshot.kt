@@ -208,14 +208,19 @@ class Snapshot(
 
               setOnLongClickListener {
                 val preferences = TextbenderPreferences.createFromContext(context)
-                Textbender.handleText(
-                  context,
-                  preferences,
-                  preferences.longPressDestination,
-                  textArea.text
-                )
-                onQuit()
-                true
+                if (preferences.longPressDestination != TextbenderPreferences.Destination.DISABLED
+                ) {
+                  Textbender.handleText(
+                    context,
+                    preferences,
+                    preferences.longPressDestination,
+                    textArea.text
+                  )
+                  onQuit()
+                  true
+                } else {
+                  false
+                }
               }
             }
         )

@@ -69,7 +69,6 @@
         android:name=".ProcessTextActivity"
         android:exported="true"
         android:noHistory="true"
-        android:launchMode="singleInstance"
         android:theme="@android:style/Theme.NoDisplay">
     </activity>
 

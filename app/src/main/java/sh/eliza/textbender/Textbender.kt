@@ -19,6 +19,7 @@ object Textbender {
     text: CharSequence
   ) {
     when (destination) {
+      TextbenderPreferences.Destination.DISABLED -> {}
       TextbenderPreferences.Destination.CLIPBOARD -> {
         val clipboardManager =
           context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

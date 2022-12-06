@@ -22,34 +22,43 @@
 
   <!-- Preference Titles -->
   <string name="permissions_header">Permissions</string>
-  <string name="sources_header">Sources</string>
-  <string name="destinations_header">Destinations</string>
-  <string name="url_header">Open URL</string>
+  <string name="ui_options_header">UI options</string>
+  <string name="mappings_header">Mappings</string>
+  <string name="source_options_header">Source options</string>
+  <string name="destination_options_header">Destination options</string>
 
-  <!-- Permission Titles -->
+  <!-- Permissions -->
   <string name="accessibility_title">Accessibility service</string>
   <string name="accessibility_summary">Required for text button overlay and Yomichan support.</string>
 
-  <!-- Text Sources -->
+  <!-- UI Options -->
   <string name="accessibility_shortcut_title">Accessibility shortcut</string>
   <string name="accessibility_shortcut_summary">Shows text button overlay when the accessibility shortcut is pressed.</string>
   <string name="floating_button_title">Floating button</string>
   <string name="floating_button_summary">Shows a floating button which activates the text button overlay when pressed.</string>
-  <string name="global_context_menu_title">Global context menu</string>
-  <string name="global_context_menu_summary">Shows an entry in the context menu when selecting text.</string>
-  <string name="share_title">Share menu</string>
-  <string name="share_summary">Allows text to be received via the share menu.</string>
-  <string name="url_title">URL scheme</string>
-  <string name="url_summary">Allows text to be received via “textbender://x?x={text…}”.</string>
 
-  <!-- Destination -->
+  <!-- Mappings -->
   <string name="tap_destination_title">Overlay tap</string>
   <string name="long_press_destination_title">Overlay long-press</string>
   <string name="global_context_menu_destination_title">Global context menu</string>
-  <string name="share_destination_title">Share</string>
+  <string name="share_destination_title">Share menu</string>
   <string name="url_destination_title">URL scheme</string>
+  <string name="clipboard_destination_title">Clipboard</string>
 
-  <!-- URL -->
+  <!-- Source Options -->
+  <string name="clipboard_regexp_title">Clipboard regular expression</string>
+  <string name="clipboard_regexp_default" translatable="false">
+    .*[\\u3400-\\u4dbf\\u4e00-\\u9fff\\uf900-\\ufaff\\u3040-\\u309f\\u30a0-\\u30ffー].*
+  </string>
+
+  <!-- Destination Options -->
   <string name="url_format_title">URL format</string>
   <string name="url_format_default" translatable="false">https://duckduckgo.com/?q={text}</string>
+
+  <!-- Destination entries -->
+  <string name="destination_disabled">Disabled</string>
+  <string name="destination_clipboard">Copy to clipboard</string>
+  <string name="destination_url">Open URL</string>
+  <string name="destination_share">Share</string>
+  <string name="destination_yomichan">Open in Yomichan via Kiwi Browser</string>
 </resources>
