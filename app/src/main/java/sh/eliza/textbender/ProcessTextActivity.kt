@@ -11,7 +11,7 @@ class ProcessTextActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val preferences = TextbenderPreferences.createFromContext(this)
+    val preferences = TextbenderPreferences.getInstance(applicationContext).snapshot
 
     when (intent.action) {
       Intent.ACTION_PROCESS_TEXT -> {

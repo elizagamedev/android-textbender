@@ -4,30 +4,30 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 
 class ToggleOverlayButtonTileService : TileService() {
+  private lateinit var preferences: TextbenderPreferences
+
   override fun onStartListening() {
     super.onStartListening()
+    preferences = TextbenderPreferences.getInstance(applicationContext)
     updateState()
-    TextbenderPreferences.registerOnChangeListener(this, this::updateState)
+    preferences.registerOnChangeListener(this::updateState)
   }
 
   override fun onStopListening() {
     super.onStopListening()
-    TextbenderPreferences.unregisterOnChangeListener(this, this::updateState)
+    preferences.unregisterOnChangeListener(this::updateState)
   }
 
   override fun onClick() {
     super.onClick()
-    TextbenderPreferences.putFloatingButtonEnabled(
-      this,
-      !TextbenderPreferences.createFromContext(this).floatingButtonEnabled
-    )
+    preferences.putFloatingButtonEnabled(!preferences.snapshot.floatingButtonEnabled)
   }
 
   private fun updateState() {
     qsTile.state =
       if (TextbenderService.instance === null) {
         Tile.STATE_UNAVAILABLE
-      } else if (TextbenderPreferences.createFromContext(this).floatingButtonEnabled) {
+      } else if (preferences.snapshot.floatingButtonEnabled) {
         Tile.STATE_ACTIVE
       } else {
         Tile.STATE_INACTIVE

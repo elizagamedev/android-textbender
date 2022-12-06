@@ -5,22 +5,15 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.preference.PreferenceManager
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
-private val onChangeListeners = ConcurrentHashMap<() -> Unit, OnSharedPreferenceChangeListener>()
+private val instanceLock = ReentrantLock()
+private var instance: TextbenderPreferences? = null
 
-data class TextbenderPreferences(
-  val accessibilityShortcutEnabled: Boolean,
-  val floatingButtonEnabled: Boolean,
-  val tapDestination: Destination,
-  val longPressDestination: Destination,
-  val globalContextMenuDestination: Destination,
-  val shareDestination: Destination,
-  val urlDestination: Destination,
-  val clipboardDestination: Destination,
-  val urlFormat: String,
-  // Hidden preferences
-  val floatingButtonX: Int,
-  val floatingButtonY: Int,
+class TextbenderPreferences(
+  private val context: Context,
+  private val preferences: SharedPreferences,
 ) {
   enum class Destination {
     DISABLED,
@@ -30,10 +23,25 @@ data class TextbenderPreferences(
     YOMICHAN,
   }
 
-  companion object {
-    fun createFromContext(context: Context): TextbenderPreferences {
-      val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+  data class Snapshot(
+    val accessibilityShortcutEnabled: Boolean,
+    val floatingButtonEnabled: Boolean,
+    val tapDestination: Destination,
+    val longPressDestination: Destination,
+    val globalContextMenuDestination: Destination,
+    val shareDestination: Destination,
+    val urlDestination: Destination,
+    val clipboardDestination: Destination,
+    val urlFormat: String,
+    // Hidden preferences.
+    val floatingButtonX: Int,
+    val floatingButtonY: Int,
+  )
 
+  private val onChangeListeners = ConcurrentHashMap<() -> Unit, OnSharedPreferenceChangeListener>()
+
+  val snapshot: Snapshot
+    get() {
       // UI Options
       val accessibilityShortcutEnabled = preferences.getBoolean("accessibility_shortcut", false)
       val floatingButtonEnabled = preferences.getBoolean("floating_button", false)
@@ -58,7 +66,7 @@ data class TextbenderPreferences(
       val floatingButtonX = preferences.getInt("floating_button_x", 0)
       val floatingButtonY = preferences.getInt("floating_button_y", 0)
 
-      return TextbenderPreferences(
+      return Snapshot(
         accessibilityShortcutEnabled,
         floatingButtonEnabled,
         tapDestination,
@@ -73,43 +81,58 @@ data class TextbenderPreferences(
       )
     }
 
-    fun registerOnChangeListener(context: Context, listener: () -> Unit) {
-      val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-      val innerListener = OnSharedPreferenceChangeListener { _, _ -> listener() }
-      onChangeListeners.put(listener, innerListener)
-      preferences.registerOnSharedPreferenceChangeListener(innerListener)
+  fun registerOnChangeListener(listener: () -> Unit) {
+    val innerListener = OnSharedPreferenceChangeListener { _, _ -> listener() }
+    onChangeListeners.put(listener, innerListener)
+    preferences.registerOnSharedPreferenceChangeListener(innerListener)
+  }
+
+  fun unregisterOnChangeListener(listener: () -> Unit) {
+    onChangeListeners.remove(listener)?.let {
+      preferences.unregisterOnSharedPreferenceChangeListener(it)
+    }
+  }
+
+  fun putFloatingButtonEnabled(enabled: Boolean) {
+    PreferenceManager.getDefaultSharedPreferences(context)
+      .edit()
+      .putBoolean("floating_button", enabled)
+      .apply()
+  }
+
+  fun putFloatingButtonPosition(x: Int, y: Int) {
+    PreferenceManager.getDefaultSharedPreferences(context)
+      .edit()
+      .putInt("floating_button_x", x)
+      .putInt("floating_button_y", y)
+      .apply()
+  }
+
+  private fun SharedPreferences.getDestination(key: String) =
+    when (getString(key, "disabled")) {
+      "disabled" -> Destination.DISABLED
+      "clipboard" -> Destination.CLIPBOARD
+      "url" -> Destination.URL
+      "share" -> Destination.SHARE
+      "yomichan" -> Destination.YOMICHAN
+      else -> throw IllegalArgumentException()
     }
 
-    fun unregisterOnChangeListener(context: Context, listener: () -> Unit) {
-      val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-      onChangeListeners.remove(listener)?.let {
-        preferences.unregisterOnSharedPreferenceChangeListener(it)
-      }
-    }
-
-    fun putFloatingButtonEnabled(context: Context, enabled: Boolean) {
-      PreferenceManager.getDefaultSharedPreferences(context)
-        .edit()
-        .putBoolean("floating_button", enabled)
-        .apply()
-    }
-
-    fun putFloatingButtonPosition(context: Context, x: Int, y: Int) {
-      PreferenceManager.getDefaultSharedPreferences(context)
-        .edit()
-        .putInt("floating_button_x", x)
-        .putInt("floating_button_y", y)
-        .apply()
-    }
-
-    private fun SharedPreferences.getDestination(key: String) =
-      when (getString(key, "disabled")) {
-        "disabled" -> Destination.DISABLED
-        "clipboard" -> Destination.CLIPBOARD
-        "url" -> Destination.URL
-        "share" -> Destination.SHARE
-        "yomichan" -> Destination.YOMICHAN
-        else -> throw IllegalArgumentException()
+  companion object {
+    fun getInstance(context: Context) =
+      instanceLock.withLock {
+        val thisInstance = instance
+        if (thisInstance === null) {
+          val newInstance =
+            TextbenderPreferences(
+              context,
+              PreferenceManager.getDefaultSharedPreferences(context),
+            )
+          instance = newInstance
+          newInstance
+        } else {
+          thisInstance
+        }
       }
   }
 }

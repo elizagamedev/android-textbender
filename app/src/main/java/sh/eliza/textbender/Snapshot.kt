@@ -49,36 +49,37 @@ class Snapshot(
   windows: List<AccessibilityWindowInfo>,
   private val onQuit: () -> Unit,
 ) : AutoCloseable {
+  private val preferences = TextbenderPreferences.getInstance(context)
 
-  val growPaddingPx =
+  private val growPaddingPx =
     TypedValue.applyDimension(
       TypedValue.COMPLEX_UNIT_DIP,
       GROW_PADDING_DP,
       context.resources.displayMetrics
     )
 
-  val paddingPx =
+  private val paddingPx =
     TypedValue.applyDimension(
       TypedValue.COMPLEX_UNIT_PX,
       PADDING_DP,
       context.resources.displayMetrics
     )
 
-  val defaultTextSizePx =
+  private val defaultTextSizePx =
     TypedValue.applyDimension(
       TypedValue.COMPLEX_UNIT_PX,
       DEFAULT_TEXT_SIZE_DP,
       context.resources.displayMetrics
     )
 
-  val impossiblySmallTextSizePx =
+  private val impossiblySmallTextSizePx =
     TypedValue.applyDimension(
       TypedValue.COMPLEX_UNIT_PX,
       IMPOSSIBLY_SMALL_TEXT_SIZE_DP,
       context.resources.displayMetrics
     )
 
-  val density = context.resources.displayMetrics.density
+  private val density = context.resources.displayMetrics.density
 
   private val textAreas = run {
     val occlusionBuffer = OcclusionBuffer()
@@ -196,24 +197,25 @@ class Snapshot(
               setTextSize(TypedValue.COMPLEX_UNIT_PX, max(textArea.textSize - paddingPx, 1f))
 
               setOnClickListener {
-                val preferences = TextbenderPreferences.createFromContext(context)
+                val preferencesSnapshot = preferences.snapshot
                 Textbender.handleText(
                   context,
-                  preferences,
-                  preferences.tapDestination,
+                  preferencesSnapshot,
+                  preferencesSnapshot.tapDestination,
                   textArea.text
                 )
                 onQuit()
               }
 
               setOnLongClickListener {
-                val preferences = TextbenderPreferences.createFromContext(context)
-                if (preferences.longPressDestination != TextbenderPreferences.Destination.DISABLED
+                val preferencesSnapshot = preferences.snapshot
+                if (preferencesSnapshot.longPressDestination !=
+                    TextbenderPreferences.Destination.DISABLED
                 ) {
                   Textbender.handleText(
                     context,
-                    preferences,
-                    preferences.longPressDestination,
+                    preferencesSnapshot,
+                    preferencesSnapshot.longPressDestination,
                     textArea.text
                   )
                   onQuit()

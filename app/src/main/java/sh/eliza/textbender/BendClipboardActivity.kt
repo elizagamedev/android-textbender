@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 class BendClipboardActivity : AppCompatActivity() {
   override fun onWindowFocusChanged(hasFocus: Boolean) {
     if (hasFocus) {
-      Textbender.bendClipboard(this)
+      Textbender.bendClipboard(this, TextbenderPreferences.getInstance(applicationContext).snapshot)
       finish()
     }
   }

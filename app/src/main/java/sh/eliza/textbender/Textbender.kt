@@ -12,8 +12,7 @@ import java.net.URLEncoder
 private const val TAG = "Textbender"
 
 object Textbender {
-  fun bendClipboard(context: Context) {
-    val preferences = TextbenderPreferences.createFromContext(context)
+  fun bendClipboard(context: Context, preferences: TextbenderPreferences.Snapshot) {
     val text =
       (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
         .primaryClip
@@ -34,7 +33,7 @@ object Textbender {
 
   fun handleText(
     context: Context,
-    preferences: TextbenderPreferences,
+    preferences: TextbenderPreferences.Snapshot,
     destination: TextbenderPreferences.Destination,
     text: CharSequence
   ) {

@@ -12,6 +12,8 @@ private const val DRAG_DIAMETER_DP = 20f
 private const val BUTTON_SIZE_DP = 128f
 
 class FloatingButton(private val service: TextbenderService) : AutoCloseable {
+  private val preferences = TextbenderPreferences.getInstance(service.applicationContext)
+
   private val button: ImageButton =
     ImageButton(service.applicationContext).apply {
       setImageResource(R.drawable.ic_launcher_foreground)
@@ -53,7 +55,7 @@ class FloatingButton(private val service: TextbenderService) : AutoCloseable {
     )
 
   init {
-    TextbenderPreferences.createFromContext(service.applicationContext).let {
+    preferences.snapshot.let {
       layoutParams.x = it.floatingButtonX
       layoutParams.y = it.floatingButtonY
     }
@@ -111,11 +113,7 @@ class FloatingButton(private val service: TextbenderService) : AutoCloseable {
         }
       }
       MotionEvent.ACTION_UP -> {
-        TextbenderPreferences.putFloatingButtonPosition(
-          service.applicationContext,
-          layoutParams.x,
-          layoutParams.y
-        )
+        preferences.putFloatingButtonPosition(layoutParams.x, layoutParams.y)
       }
       else -> {}
     }

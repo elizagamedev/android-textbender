@@ -18,8 +18,7 @@ class TextbenderService : AccessibilityService() {
   private val handlerThread = HandlerThread(TAG).apply { start() }
   val handler = Handler(handlerThread.looper)
 
-  private val onPreferenceChangeListener: () -> Unit = { handler.post { resetFloatingButton() } }
-
+  lateinit var preferences: TextbenderPreferences
   lateinit var windowManager: WindowManager
 
   private var snapshot: Snapshot? = null
@@ -29,6 +28,7 @@ class TextbenderService : AccessibilityService() {
 
   override fun onCreate() {
     super.onCreate()
+    preferences = TextbenderPreferences.getInstance(applicationContext)
     windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
   }
 
@@ -43,9 +43,7 @@ class TextbenderService : AccessibilityService() {
         ) {}
 
         override fun onClicked(controller: AccessibilityButtonController) {
-          if (TextbenderPreferences.createFromContext(applicationContext)
-              .accessibilityShortcutEnabled
-          ) {
+          if (preferences.snapshot.accessibilityShortcutEnabled) {
             if (snapshot === null) {
               openOverlay()
             }
@@ -56,11 +54,11 @@ class TextbenderService : AccessibilityService() {
 
     handler.post { resetFloatingButton() }
 
-    TextbenderPreferences.registerOnChangeListener(applicationContext, onPreferenceChangeListener)
+    preferences.registerOnChangeListener(this::onPreferenceChange)
   }
 
   override fun onUnbind(intent: Intent): Boolean {
-    TextbenderPreferences.unregisterOnChangeListener(applicationContext, onPreferenceChangeListener)
+    preferences.unregisterOnChangeListener(this::onPreferenceChange)
     handlerThread.run {
       quitSafely()
       join()
@@ -92,6 +90,10 @@ class TextbenderService : AccessibilityService() {
     }
   }
 
+  private fun onPreferenceChange() {
+    handler.post { resetFloatingButton() }
+  }
+
   private fun handleOpenYomichan(text: CharSequence) {
     openYomichanStateMachine
       .getAndSet(
@@ -116,7 +118,7 @@ class TextbenderService : AccessibilityService() {
   }
 
   private fun resetFloatingButton() {
-    val enabled = TextbenderPreferences.createFromContext(applicationContext).floatingButtonEnabled
+    val enabled = preferences.snapshot.floatingButtonEnabled
     if (enabled) {
       if (floatingButton === null) {
         floatingButton = FloatingButton(this)
