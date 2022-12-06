@@ -9,19 +9,25 @@
 
   </PreferenceCategory>
 
-  <PreferenceCategory app:title="@string/ui_options_header">
+  <PreferenceCategory app:title="@string/floating_buttons_header">
 
     <SwitchPreferenceCompat
-        app:key="accessibility_shortcut"
-        app:title="@string/accessibility_shortcut_title"
-        app:summary="@string/accessibility_shortcut_summary"
+        app:key="floating_buttons"
+        app:title="@string/floating_buttons_title"
+        app:summary="@string/floating_buttons_summary"
         app:dependency="accessibility" />
 
     <SwitchPreferenceCompat
-        app:key="floating_button"
-        app:title="@string/floating_button_title"
-        app:summary="@string/floating_button_summary"
-        app:dependency="accessibility" />
+        app:key="floating_button_overlay"
+        app:title="@string/floating_button_overlay_title"
+        app:summary="@string/floating_button_overlay_summary"
+        app:dependency="floating_buttons" />
+
+    <SwitchPreferenceCompat
+        app:key="floating_button_clipboard"
+        app:title="@string/floating_button_clipboard_title"
+        app:summary="@string/floating_button_clipboard_summary"
+        app:dependency="floating_buttons" />
 
   </PreferenceCategory>
 

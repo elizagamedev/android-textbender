@@ -47,10 +47,8 @@ class TextbenderService : AccessibilityService() {
         ) {}
 
         override fun onClicked(controller: AccessibilityButtonController) {
-          if (preferences.snapshot.accessibilityShortcutEnabled) {
-            if (snapshot === null) {
-              openOverlay()
-            }
+          if (snapshot === null) {
+            openOverlay()
           }
         }
       }
@@ -126,7 +124,7 @@ class TextbenderService : AccessibilityService() {
   }
 
   private fun resetFloatingButton() {
-    val enabled = preferences.snapshot.floatingButtonEnabled
+    val enabled = preferences.snapshot.floatingButtonsEnabled
     if (enabled) {
       if (floatingButton === null) {
         floatingButton = FloatingButton(this)

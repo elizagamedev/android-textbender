@@ -22,7 +22,7 @@
 
   <!-- Preference Titles -->
   <string name="permissions_header">Permissions</string>
-  <string name="ui_options_header">UI options</string>
+  <string name="floating_buttons_header">Floating buttons</string>
   <string name="mappings_header">Mappings</string>
   <string name="destination_options_header">Destination options</string>
 
@@ -30,11 +30,13 @@
   <string name="accessibility_title">Accessibility service</string>
   <string name="accessibility_summary">Required for text button overlay and Yomichan support.</string>
 
-  <!-- UI Options -->
-  <string name="accessibility_shortcut_title">Accessibility shortcut</string>
-  <string name="accessibility_shortcut_summary">Shows text button overlay when the accessibility shortcut is pressed.</string>
-  <string name="floating_button_title">Floating button</string>
-  <string name="floating_button_summary">Shows a floating button which activates the text button overlay when pressed.</string>
+  <!-- Floating buttons -->
+  <string name="floating_buttons_title">Floating buttons</string>
+  <string name="floating_buttons_summary">Shows floating buttons to conveniently activate features.</string>
+  <string name="floating_button_overlay_title">Activate overlay button</string>
+  <string name="floating_button_overlay_summary">Button which activates the overlay.</string>
+  <string name="floating_button_clipboard_title">Bend clipboard button</string>
+  <string name="floating_button_clipboard_summary">Button which bends the text currently in the clilpboard.</string>
 
   <!-- Mappings -->
   <string name="tap_destination_title">Overlay tap</string>

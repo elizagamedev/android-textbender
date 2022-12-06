@@ -56,8 +56,8 @@ class FloatingButton(private val service: TextbenderService) : AutoCloseable {
 
   init {
     preferences.snapshot.let {
-      layoutParams.x = it.floatingButtonX
-      layoutParams.y = it.floatingButtonY
+      layoutParams.x = it.floatingButtonsX
+      layoutParams.y = it.floatingButtonsY
     }
   }
 

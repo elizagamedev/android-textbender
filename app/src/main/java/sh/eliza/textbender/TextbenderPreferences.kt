@@ -24,8 +24,9 @@ class TextbenderPreferences(
   }
 
   data class Snapshot(
-    val accessibilityShortcutEnabled: Boolean,
-    val floatingButtonEnabled: Boolean,
+    val floatingButtonsEnabled: Boolean,
+    val floatingButtonOverlayEnabled: Boolean,
+    val floatingButtonClipboardEnabled: Boolean,
     val tapDestination: Destination,
     val longPressDestination: Destination,
     val globalContextMenuDestination: Destination,
@@ -34,8 +35,8 @@ class TextbenderPreferences(
     val clipboardDestination: Destination,
     val urlFormat: String,
     // Hidden preferences.
-    val floatingButtonX: Int,
-    val floatingButtonY: Int,
+    val floatingButtonsX: Int,
+    val floatingButtonsY: Int,
   )
 
   private val onChangeListeners = ConcurrentHashMap<() -> Unit, OnSharedPreferenceChangeListener>()
@@ -43,8 +44,10 @@ class TextbenderPreferences(
   val snapshot: Snapshot
     get() {
       // UI Options
-      val accessibilityShortcutEnabled = preferences.getBoolean("accessibility_shortcut", false)
-      val floatingButtonEnabled = preferences.getBoolean("floating_button", false)
+      val floatingButtonsEnabled = preferences.getBoolean("floating_buttons", false)
+      val floatingButtonOverlayEnabled = preferences.getBoolean("floating_button_overlay", false)
+      val floatingButtonClipboardEnabled =
+        preferences.getBoolean("floating_button_clipboard", false)
 
       // Mappings
       val tapDestination = preferences.getDestination("tap_destination")
@@ -63,12 +66,13 @@ class TextbenderPreferences(
         preferences.getString("url_format", null) ?: context.getString(R.string.url_format_default)
 
       // Hidden Options
-      val floatingButtonX = preferences.getInt("floating_button_x", 0)
-      val floatingButtonY = preferences.getInt("floating_button_y", 0)
+      val floatingButtonsX = preferences.getInt("floating_buttons_x", 0)
+      val floatingButtonsY = preferences.getInt("floating_buttons_y", 0)
 
       return Snapshot(
-        accessibilityShortcutEnabled,
-        floatingButtonEnabled,
+        floatingButtonsEnabled,
+        floatingButtonOverlayEnabled,
+        floatingButtonClipboardEnabled,
         tapDestination,
         longPressDestination,
         globalContextMenuDestination,
@@ -76,8 +80,8 @@ class TextbenderPreferences(
         urlDestination,
         clipboardDestination,
         urlFormat,
-        floatingButtonX,
-        floatingButtonY
+        floatingButtonsX,
+        floatingButtonsY
       )
     }
 
@@ -96,15 +100,15 @@ class TextbenderPreferences(
   fun putFloatingButtonEnabled(enabled: Boolean) {
     PreferenceManager.getDefaultSharedPreferences(context)
       .edit()
-      .putBoolean("floating_button", enabled)
+      .putBoolean("floating_buttons", enabled)
       .apply()
   }
 
   fun putFloatingButtonPosition(x: Int, y: Int) {
     PreferenceManager.getDefaultSharedPreferences(context)
       .edit()
-      .putInt("floating_button_x", x)
-      .putInt("floating_button_y", y)
+      .putInt("floating_buttons_x", x)
+      .putInt("floating_buttons_y", y)
       .apply()
   }
 

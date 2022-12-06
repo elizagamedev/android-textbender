@@ -40,7 +40,7 @@ class FloatingButtonsTileService : TileService() {
   override fun onClick() {
     super.onClick()
     if (serviceInstance !== null) {
-      preferences.putFloatingButtonEnabled(!preferences.snapshot.floatingButtonEnabled)
+      preferences.putFloatingButtonEnabled(!preferences.snapshot.floatingButtonsEnabled)
     }
   }
 
@@ -62,7 +62,7 @@ class FloatingButtonsTileService : TileService() {
       state =
         if (serviceInstance === null) {
           Tile.STATE_UNAVAILABLE
-        } else if (preferencesSnapshot?.floatingButtonEnabled ?: false) {
+        } else if (preferencesSnapshot?.floatingButtonsEnabled ?: false) {
           Tile.STATE_ACTIVE
         } else {
           Tile.STATE_INACTIVE
