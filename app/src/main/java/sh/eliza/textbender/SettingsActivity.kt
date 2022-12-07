@@ -40,7 +40,10 @@ class SettingsActivity : AppCompatActivity() {
           onPreferenceClickListener = OnPreferenceClickListener {
             val intent =
               Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                flags =
+                  Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
               }
             startActivity(intent)
             true

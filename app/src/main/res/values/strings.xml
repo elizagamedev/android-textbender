@@ -6,15 +6,9 @@
   </string>
 
   <string name="accessibility_service_description">
-    The Textbender accessibility service is required by both the text button
-    overlay and Kiwi Browser Yomichan support. To use either of these features,
-    please enable this service.\n\nThe text button overlay may be activated by
-    either the accessibility shortcut or the floating button, after which all
-    visible text on the screen will be turned into clickable buttons with
-    configurable actions.\n\nIn addition to the above, enabling this feature
-    also allows Textbender to open text directly in the Yomichan addon in Kiwi
-    Browser if both are installed. Support for this is experimental. Please view
-    Textbender’s README for more information.
+    The Textbender accessibility service is required by the text button overlay,
+    floating buttons, and Yomichan support. To use any or all of these features,
+    please enable this service.
   </string>
 
   <string name="could_not_open_kiwi_browser">Could not open Kiwi Browser.</string>
