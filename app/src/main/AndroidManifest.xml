@@ -14,7 +14,8 @@
     <activity
         android:name=".SettingsActivity"
         android:exported="true"
-        android:launchMode="singleInstance">
+        android:launchMode="singleInstance"
+        android:taskAffinity=".SettingsActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
@@ -69,7 +70,6 @@
         android:name=".ProcessTextActivity"
         android:exported="true"
         android:noHistory="true"
-        android:autoRemoveFromRecents="true"
         android:theme="@android:style/Theme.NoDisplay">
     </activity>
 
@@ -77,8 +77,11 @@
         android:name=".BendClipboardActivity"
         android:label=""
         android:exported="true"
+        android:launchMode="singleInstance"
+        android:taskAffinity=".BendClipboardActivity"
         android:noHistory="true"
-        android:autoRemoveFromRecents="true">
+        android:excludeFromRecents="true"
+        android:theme="@style/Theme.Material3.DayNight.NoActionBar">
     </activity>
 
     <activity
@@ -106,6 +109,7 @@
         android:name=".BendClipboardTileService"
         android:label="@string/qs_bend_clipboard"
         android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+        android:icon="@drawable/content_paste_go_24dp"
         android:exported="true">
       <intent-filter>
         <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -116,6 +120,7 @@
         android:name=".ActivateOverlayTileService"
         android:label="@string/qs_activate_overlay"
         android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+        android:icon="@drawable/layers_24dp"
         android:exported="true">
       <intent-filter>
         <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -126,6 +131,7 @@
         android:name=".FloatingButtonsTileService"
         android:label="@string/qs_floating_buttons"
         android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+        android:icon="@drawable/directions_boat_24dp"
         android:exported="true">
       <meta-data
           android:name="android.service.quicksettings.TOGGLEABLE_TILE"

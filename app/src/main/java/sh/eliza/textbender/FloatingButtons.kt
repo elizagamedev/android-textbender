@@ -1,14 +1,14 @@
 package sh.eliza.textbender
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.util.TypedValue
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageButton
+import android.widget.Button
 import kotlin.math.abs
 
 private const val DRAG_DIAMETER_DP = 16f
@@ -17,13 +17,14 @@ class FloatingButtons(private val service: TextbenderService) : AutoCloseable {
   private val preferences = TextbenderPreferences.getInstance(service.applicationContext)
 
   private val root: View = run {
-    val layoutInflater = service.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    layoutInflater.inflate(R.layout.floating_buttons, /*root=*/ null)
+    val layoutInflater =
+      LayoutInflater.from(ContextThemeWrapper(service, R.style.Theme_Textbender_Light))
+    @Suppress("InflateParams") layoutInflater.inflate(R.layout.floating_buttons, /*root=*/ null)
   }
 
-  private val overlayButton = root.findViewById<ImageButton>(R.id.overlay)
+  private val overlayButton = root.findViewById<Button>(R.id.overlay)
 
-  private val clipboardButton = root.findViewById<ImageButton>(R.id.clipboard)
+  private val clipboardButton = root.findViewById<Button>(R.id.clipboard)
 
   init {
     val preferencesSnapshot = preferences.snapshot

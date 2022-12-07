@@ -175,7 +175,7 @@ class Snapshot(
               context,
               /*attrs=*/ null,
               /*defStyleAttr=*/ 0,
-              /*defStyleRes=*/ R.style.button_textarea
+              /*defStyleRes=*/ R.style.Widget_Button_TextOverlay
             )
             .apply {
               text = textArea.text

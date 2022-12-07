@@ -22,32 +22,12 @@ class SettingsActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.settings_activity)
 
-    val globalContextMenuComponentName = ComponentName(this, "${packageName}.ContextMenuAction")
-    val shareComponentName = ComponentName(this, "${packageName}.ShareAction")
-    val urlComponentName = ComponentName(this, "${packageName}.UrlAction")
-
     if (savedInstanceState == null) {
-      supportFragmentManager
-        .beginTransaction()
-        .replace(
-          R.id.settings,
-          SettingsFragment(
-            packageManager,
-            globalContextMenuComponentName,
-            shareComponentName,
-            urlComponentName
-          )
-        )
-        .commit()
+      supportFragmentManager.beginTransaction().replace(R.id.settings, SettingsFragment()).commit()
     }
   }
 
-  class SettingsFragment(
-    private val packageManager: PackageManager,
-    private val globalContextMenuComponentName: ComponentName,
-    private val shareComponentName: ComponentName,
-    private val urlComponentName: ComponentName,
-  ) : PreferenceFragmentCompat() {
+  class SettingsFragment() : PreferenceFragmentCompat() {
     private lateinit var accessibilityPreference: SwitchPreferenceCompat
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -69,14 +49,16 @@ class SettingsActivity : AppCompatActivity() {
           onPreferenceChangeListener = OnPreferenceChangeListener { _, _ -> false }
         }
 
+      val context = requireContext()
+
       findPreference<ListPreference>("global_context_menu_destination")!!.setAsComponentDestination(
-        globalContextMenuComponentName
+        ComponentName(context, "${context.packageName}.ContextMenuAction")
       )
       findPreference<ListPreference>("share_destination")!!.setAsComponentDestination(
-        shareComponentName
+        ComponentName(context, "${context.packageName}.ShareAction")
       )
       findPreference<ListPreference>("url_destination")!!.setAsComponentDestination(
-        urlComponentName
+        ComponentName(context, "${context.packageName}.UrlAction")
       )
 
       findPreference<EditTextPreference>("url_format")!!.setOnBindEditTextListener {
@@ -110,15 +92,17 @@ class SettingsActivity : AppCompatActivity() {
     private fun ListPreference.setAsComponentDestination(componentName: ComponentName) {
       onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
         val enabled = newValue as String != "disabled"
-        packageManager.setComponentEnabledSetting(
-          componentName,
-          if (enabled) {
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-          } else {
-            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
-          },
-          PackageManager.DONT_KILL_APP
-        )
+        requireContext()
+          .packageManager
+          .setComponentEnabledSetting(
+            componentName,
+            if (enabled) {
+              PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+            } else {
+              PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+            },
+            PackageManager.DONT_KILL_APP
+          )
 
         true
       }
