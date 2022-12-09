@@ -32,7 +32,7 @@ private const val PADDING_DP = 2f
 private const val IMPOSSIBLY_SMALL_TEXT_SIZE_DP = 8f
 
 /** Default text size if an impossibly low value is returned. */
-private const val DEFAULT_TEXT_SIZE_DP = 32f
+private const val DEFAULT_TEXT_SIZE_DP = 18f
 
 /** Minimum length of a string to be considered "wrappable". */
 private const val MIN_WRAPPABLE_LENGTH = 32
@@ -60,21 +60,21 @@ class Snapshot(
 
   private val paddingPx =
     TypedValue.applyDimension(
-      TypedValue.COMPLEX_UNIT_PX,
+      TypedValue.COMPLEX_UNIT_DIP,
       PADDING_DP,
       context.resources.displayMetrics
     )
 
   private val defaultTextSizePx =
     TypedValue.applyDimension(
-      TypedValue.COMPLEX_UNIT_PX,
+      TypedValue.COMPLEX_UNIT_DIP,
       DEFAULT_TEXT_SIZE_DP,
       context.resources.displayMetrics
     )
 
   private val impossiblySmallTextSizePx =
     TypedValue.applyDimension(
-      TypedValue.COMPLEX_UNIT_PX,
+      TypedValue.COMPLEX_UNIT_DIP,
       IMPOSSIBLY_SMALL_TEXT_SIZE_DP,
       context.resources.displayMetrics
     )
