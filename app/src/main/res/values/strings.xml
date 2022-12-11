@@ -14,7 +14,10 @@
   <!-- Toasts -->
   <string name="could_not_open_kiwi_browser">Could not open Kiwi Browser.</string>
   <string name="could_not_access_accessibility_service">Could not access Textbender accessibility service.</string>
+  <string name="could_not_open_kiwi_browser_url">Could not open URL in Kiwi Browser. Status: %1$s</string>
   <string name="could_not_open_uri">Could not open URI: %1$s</string>
+  <string name="clipboard_empty">Clipboard is empty.</string>
+  <string name="clipboard_not_configured">Clipboard is not configured.</string>
 
   <!-- Preference Titles -->
   <string name="permissions_header">Permissions</string>
@@ -25,6 +28,8 @@
   <!-- Permissions -->
   <string name="accessibility_title">Accessibility service</string>
   <string name="accessibility_summary">Required for text button overlay and Yomichan support.</string>
+  <string name="notifications_title">Notifications</string>
+  <string name="notifications_summary">Required for toasts to appear.</string>
 
   <!-- Floating buttons -->
   <string name="floating_buttons_title">Floating buttons</string>

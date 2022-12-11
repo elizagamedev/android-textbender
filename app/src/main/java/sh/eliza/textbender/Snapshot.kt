@@ -45,6 +45,7 @@ private data class TextArea(
 
 class Snapshot(
   private val context: Context,
+  private val toaster: Toaster,
   private val windowManager: WindowManager,
   windows: List<AccessibilityWindowInfo>,
   private val onQuit: () -> Unit,
@@ -200,6 +201,7 @@ class Snapshot(
                 val preferencesSnapshot = preferences.snapshot
                 Textbender.handleText(
                   context,
+                  toaster,
                   preferencesSnapshot,
                   preferencesSnapshot.tapDestination,
                   textArea.text
@@ -214,6 +216,7 @@ class Snapshot(
                 ) {
                   Textbender.handleText(
                     context,
+                    toaster,
                     preferencesSnapshot,
                     preferencesSnapshot.longPressDestination,
                     textArea.text

@@ -3,9 +3,12 @@ package sh.eliza.textbender
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class BendClipboardActivity : AppCompatActivity() {
+  private val toaster = Toaster(this)
+
   override fun onWindowFocusChanged(hasFocus: Boolean) {
     val preferences = TextbenderPreferences.getInstance(this).snapshot
     if (hasFocus) {
@@ -15,12 +18,15 @@ class BendClipboardActivity : AppCompatActivity() {
           ?.getItemAt(0)
           ?.coerceToText(this)
       if (preferences.clipboardDestination == TextbenderPreferences.Destination.DISABLED) {
+        toaster.show(getString(R.string.clipboard_not_configured), Toast.LENGTH_SHORT)
         startActivity(
           Intent(this, SettingsActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
         )
       } else {
-        if (!text.isNullOrEmpty()) {
-          Textbender.handleText(this, preferences, preferences.clipboardDestination, text)
+        if (text.isNullOrEmpty()) {
+          toaster.show(getString(R.string.clipboard_empty), Toast.LENGTH_SHORT)
+        } else {
+          Textbender.handleText(this, toaster, preferences, preferences.clipboardDestination, text)
         }
       }
       finish()

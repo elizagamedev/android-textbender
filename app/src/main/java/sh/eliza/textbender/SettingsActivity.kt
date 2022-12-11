@@ -1,12 +1,17 @@
 package sh.eliza.textbender
 
+import android.Manifest
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference.OnPreferenceChangeListener
@@ -16,8 +21,11 @@ import androidx.preference.SwitchPreferenceCompat
 
 private const val TAG = "SettingsActivity"
 
-class SettingsActivity : AppCompatActivity() {
+private interface PermissionPreference {
+  fun onResume()
+}
 
+class SettingsActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.settings_activity)
@@ -28,41 +36,144 @@ class SettingsActivity : AppCompatActivity() {
   }
 
   class SettingsFragment() : PreferenceFragmentCompat() {
-    private lateinit var accessibilityPreference: SwitchPreferenceCompat
+    private inner class RuntimePermissionPreference(
+      key: String,
+      private val permission: String,
+      private val settingsIntent: () -> Intent
+    ) : PermissionPreference {
+      private val isGranted: Boolean
+        get() =
+          ContextCompat.checkSelfPermission(requireContext(), permission) ==
+            PackageManager.PERMISSION_GRANTED
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-      setPreferencesFromResource(R.xml.root_preferences, rootKey)
-
-      accessibilityPreference =
-        findPreference<SwitchPreferenceCompat>("accessibility")!!.apply {
+      private val preference: SwitchPreferenceCompat =
+        findPreference<SwitchPreferenceCompat>(key)!!.apply {
           setPersistent(false)
 
           onPreferenceClickListener = OnPreferenceClickListener {
-            val intent =
-              Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
-                flags =
-                  Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
-                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-              }
-            startActivity(intent)
+            if (isGranted) {
+              startSettingsIntent()
+            } else {
+              activityResultLauncher.launch(permission)
+            }
             true
           }
 
           onPreferenceChangeListener = OnPreferenceChangeListener { _, _ -> false }
         }
 
-      val context = requireContext()
+      private val activityResultLauncher =
+        registerForActivityResult(RequestPermission()) {
+          if (!it) {
+            startSettingsIntent()
+          }
+          preference.setChecked(it)
+        }
+
+      override fun onResume() {
+        preference.setChecked(isGranted)
+      }
+
+      private fun startSettingsIntent() {
+        startActivity(
+          settingsIntent().apply {
+            flags =
+              Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+          }
+        )
+      }
+    }
+
+    private inner class SettingsPermissionPreference(
+      key: String,
+      private val isGranted: () -> Boolean,
+      private val settingsIntent: () -> Intent
+    ) : PermissionPreference {
+      private val preference: SwitchPreferenceCompat =
+        findPreference<SwitchPreferenceCompat>(key)!!.apply {
+          setPersistent(false)
+
+          onPreferenceClickListener = OnPreferenceClickListener {
+            startSettingsIntent()
+            true
+          }
+
+          onPreferenceChangeListener = OnPreferenceChangeListener { _, _ -> false }
+        }
+
+      override fun onResume() {
+        preference.setChecked(isGranted())
+      }
+
+      private fun startSettingsIntent() {
+        startActivity(
+          settingsIntent().apply {
+            flags =
+              Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+          }
+        )
+      }
+    }
+
+    private lateinit var accessibilityPreference: PermissionPreference
+    private lateinit var notificationsPreference: PermissionPreference
+
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+      setPreferencesFromResource(R.xml.root_preferences, rootKey)
+
+      accessibilityPreference =
+        SettingsPermissionPreference(
+          "accessibility",
+          {
+            try {
+              val context = requireContext()
+              val services =
+                Settings.Secure.getString(
+                  context.contentResolver,
+                  Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+                )
+              services != null &&
+                services
+                  .split(':')
+                  .contains("${context.packageName}/${TextbenderService::class.qualifiedName}")
+            } catch (e: Settings.SettingNotFoundException) {
+              Log.e(TAG, "Failed to determine if accessibility service enabled", e)
+              false
+            }
+          },
+          { Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS) }
+        )
+
+      val notificationsPreferenceSettingsIntent = {
+        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+          putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
+        }
+      }
+
+      notificationsPreference =
+        if (Build.VERSION.SDK_INT >= 33) {
+          RuntimePermissionPreference(
+            "notifications",
+            Manifest.permission.POST_NOTIFICATIONS,
+            notificationsPreferenceSettingsIntent
+          )
+        } else {
+          SettingsPermissionPreference(
+            "notifications",
+            { NotificationManagerCompat.from(requireContext()).areNotificationsEnabled() },
+            notificationsPreferenceSettingsIntent
+          )
+        }
 
       findPreference<ListPreference>("global_context_menu_destination")!!.setAsComponentDestination(
-        ComponentName(context, "${context.packageName}.ContextMenuAction")
+        "ContextMenuAction"
       )
-      findPreference<ListPreference>("share_destination")!!.setAsComponentDestination(
-        ComponentName(context, "${context.packageName}.ShareAction")
-      )
-      findPreference<ListPreference>("url_destination")!!.setAsComponentDestination(
-        ComponentName(context, "${context.packageName}.UrlAction")
-      )
+      findPreference<ListPreference>("share_destination")!!.setAsComponentDestination("ShareAction")
+      findPreference<ListPreference>("url_destination")!!.setAsComponentDestination("UrlAction")
 
       findPreference<EditTextPreference>("url_format")!!.setOnBindEditTextListener {
         it.hint = getString(R.string.url_format_default)
@@ -71,28 +182,13 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onResume() {
       super.onResume()
-
-      val context = requireContext()
-
-      accessibilityPreference.setChecked(
-        try {
-          val services =
-            Settings.Secure.getString(
-              context.contentResolver,
-              Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-            )
-          services != null &&
-            services
-              .split(':')
-              .contains("${context.packageName}/${TextbenderService::class.qualifiedName}")
-        } catch (e: Settings.SettingNotFoundException) {
-          Log.e(TAG, "Failed to determine if accessibility service enabled", e)
-          false
-        }
-      )
+      accessibilityPreference.onResume()
+      notificationsPreference.onResume()
     }
 
-    private fun ListPreference.setAsComponentDestination(componentName: ComponentName) {
+    private fun ListPreference.setAsComponentDestination(className: String) {
+      val context = requireContext()
+      val componentName = ComponentName(context, "${context.packageName}.$className")
       onPreferenceChangeListener = OnPreferenceChangeListener { _, newValue ->
         val enabled = newValue as String != "disabled"
         requireContext()

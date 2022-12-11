@@ -14,6 +14,7 @@ private const val TAG = "Textbender"
 object Textbender {
   fun handleText(
     context: Context,
+    toaster: Toaster,
     preferences: TextbenderPreferences.Snapshot,
     destination: TextbenderPreferences.Destination,
     text: CharSequence
@@ -29,7 +30,7 @@ object Textbender {
       TextbenderPreferences.Destination.URL -> {
         val uriText = URLEncoder.encode(text.toString(), Charsets.UTF_8.name())
         val uri = Uri.parse(preferences.urlFormat.replace("{text}", uriText))
-        openUri(context, uri)
+        openUri(context, toaster, uri)
       }
       TextbenderPreferences.Destination.SHARE -> {
         val intent =
@@ -47,24 +48,24 @@ object Textbender {
       TextbenderPreferences.Destination.PLECO -> {
         val uriText = URLEncoder.encode(text.toString(), Charsets.UTF_8.name())
         val uri = Uri.parse("plecoapi://x-callback-url/s?q=$uriText")
-        openUri(context, uri)
+        openUri(context, toaster, uri)
       }
-      TextbenderPreferences.Destination.YOMICHAN -> openInYomichan(context, text)
+      TextbenderPreferences.Destination.YOMICHAN -> openInYomichan(context, toaster, text)
     }
   }
 }
 
-private fun openUri(context: Context, uri: Uri) {
+private fun openUri(context: Context, toaster: Toaster, uri: Uri) {
   Log.i(TAG, "Opening URI: ${uri}")
   val intent = Intent(Intent.ACTION_VIEW, uri).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
   if (intent.resolveActivity(context.packageManager) !== null) {
     context.startActivity(intent)
   } else {
-    context.showToast(context.getString(R.string.could_not_open_uri, uri.toString()))
+    toaster.show(context.getString(R.string.could_not_open_uri, uri.toString()), Toast.LENGTH_LONG)
   }
 }
 
-private fun openInYomichan(context: Context, text: CharSequence) {
+private fun openInYomichan(context: Context, toaster: Toaster, text: CharSequence) {
   // Launch Kiwi browser.
   val uri = Uri.parse("googlechrome://navigate?url=")
   val intent =
@@ -75,23 +76,17 @@ private fun openInYomichan(context: Context, text: CharSequence) {
   if (intent.resolveActivity(context.packageManager) !== null) {
     context.startActivity(intent)
   } else {
-    Toast.makeText(
-        context,
-        context.getString(R.string.could_not_open_kiwi_browser),
-        Toast.LENGTH_LONG
-      )
-      .show()
+    toaster.show(context.getString(R.string.could_not_open_kiwi_browser), Toast.LENGTH_SHORT)
     return
   }
   val service = TextbenderService.instance
   if (service !== null) {
     service.openYomichan(text)
   } else {
-    context.showToast(context.getString(R.string.could_not_access_accessibility_service))
+    toaster.show(
+      context.getString(R.string.could_not_access_accessibility_service),
+      Toast.LENGTH_SHORT
+    )
     return
   }
-}
-
-private fun Context.showToast(text: String) {
-  Toast.makeText(this, text, Toast.LENGTH_LONG).show()
 }

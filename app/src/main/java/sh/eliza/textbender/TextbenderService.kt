@@ -16,6 +16,7 @@ private const val TAG = "TextbenderService"
 class TextbenderService : AccessibilityService() {
   private val handlerThread = HandlerThread(TAG).apply { start() }
   val handler = Handler(handlerThread.looper)
+  val toaster = Toaster(this)
 
   lateinit var preferences: TextbenderPreferences
   lateinit var windowManager: WindowManager
@@ -117,7 +118,7 @@ class TextbenderService : AccessibilityService() {
     floatingButtons = null
     snapshot?.close()
     snapshot =
-      Snapshot(applicationContext, windowManager, windows) {
+      Snapshot(applicationContext, toaster, windowManager, windows) {
         this.snapshot?.close()
         this.snapshot = null
         resetFloatingButton(preferences.snapshot)

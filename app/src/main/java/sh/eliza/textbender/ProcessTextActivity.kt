@@ -8,6 +8,8 @@ import java.net.URLDecoder
 private const val URL_PREFIX = "textbender://x?x="
 
 class ProcessTextActivity : Activity() {
+  private val toaster = Toaster(this)
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -19,6 +21,7 @@ class ProcessTextActivity : Activity() {
         if (!text.isNullOrEmpty()) {
           Textbender.handleText(
             applicationContext,
+            toaster,
             preferences,
             preferences.globalContextMenuDestination,
             text
@@ -28,7 +31,13 @@ class ProcessTextActivity : Activity() {
       Intent.ACTION_SEND -> {
         val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)
         if (!text.isNullOrEmpty()) {
-          Textbender.handleText(applicationContext, preferences, preferences.shareDestination, text)
+          Textbender.handleText(
+            applicationContext,
+            toaster,
+            preferences,
+            preferences.shareDestination,
+            text
+          )
         }
       }
       Intent.ACTION_VIEW -> {
@@ -36,7 +45,13 @@ class ProcessTextActivity : Activity() {
         if (url.lowercase().startsWith(URL_PREFIX)) {
           val text = URLDecoder.decode(url.substring(URL_PREFIX.length), Charsets.UTF_8.name())
           if (!text.isNullOrEmpty()) {
-            Textbender.handleText(applicationContext, preferences, preferences.urlDestination, text)
+            Textbender.handleText(
+              applicationContext,
+              toaster,
+              preferences,
+              preferences.urlDestination,
+              text
+            )
           }
         }
       }

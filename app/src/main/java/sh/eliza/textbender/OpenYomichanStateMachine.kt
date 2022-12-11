@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.os.Bundle
 import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.Toast
 import java.net.URLEncoder
 
 private const val TAG = "OpenYomichanStateMachine"
@@ -131,13 +132,18 @@ class OpenYomichanStateMachine(
     }
     tries++
 
+    val state = state
     if (state !== null) {
       if (tries < MAX_RETRIES) {
         service.handler.postDelayed(this::advance, RETRY_INTERVAL_MS)
         return
       }
       Log.i(TAG, "Giving up")
-      state = null
+      service.toaster.show(
+        service.getString(R.string.could_not_open_kiwi_browser_url, state::class.simpleName),
+        Toast.LENGTH_LONG
+      )
+      this.state = null
     }
     onQuit(this)
   }

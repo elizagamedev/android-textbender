@@ -8,6 +8,11 @@
         app:title="@string/accessibility_title"
         app:summary="@string/accessibility_summary" />
 
+    <SwitchPreferenceCompat
+        app:key="notifications"
+        app:title="@string/notifications_title"
+        app:summary="@string/notifications_summary" />
+
   </PreferenceCategory>
 
   <PreferenceCategory app:title="@string/floating_buttons_header">

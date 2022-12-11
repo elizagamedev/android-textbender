@@ -5,6 +5,8 @@ import android.service.quicksettings.Tile
 import android.widget.Toast
 
 class ActivateOverlayTileService : TextbenderTileService() {
+  private val toaster = Toaster(this)
+
   override val desiredState: Int
     get() =
       if (serviceInstance === null) {
@@ -22,12 +24,7 @@ class ActivateOverlayTileService : TextbenderTileService() {
         Intent(this, DummyActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
       )
     } else {
-      Toast.makeText(
-          this,
-          getString(R.string.could_not_access_accessibility_service),
-          Toast.LENGTH_LONG
-        )
-        .show()
+      toaster.show(getString(R.string.could_not_access_accessibility_service), Toast.LENGTH_SHORT)
     }
   }
 }
