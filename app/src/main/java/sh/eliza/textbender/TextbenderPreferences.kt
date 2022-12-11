@@ -24,6 +24,7 @@ private constructor(
     CLIPBOARD,
     URL,
     SHARE,
+    PLECO,
     YOMICHAN,
   }
 
@@ -149,6 +150,7 @@ private constructor(
       "clipboard" -> Destination.CLIPBOARD
       "url" -> Destination.URL
       "share" -> Destination.SHARE
+      "pleco" -> Destination.PLECO
       "yomichan" -> Destination.YOMICHAN
       null -> default
       else -> throw IllegalArgumentException()

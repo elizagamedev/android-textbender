@@ -27,18 +27,9 @@ object Textbender {
         clipboardManager.setPrimaryClip(clipData)
       }
       TextbenderPreferences.Destination.URL -> {
-        val uri =
-          Uri.parse(
-            preferences.urlFormat.replace(
-              "{text}",
-              URLEncoder.encode(text.toString(), Charsets.UTF_8.name())
-            )
-          )
-        Log.i(TAG, "Opening URI: ${uri}")
-        val intent = Intent(Intent.ACTION_VIEW, uri).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
-        if (intent.resolveActivity(context.packageManager) !== null) {
-          context.startActivity(intent)
-        }
+        val uriText = URLEncoder.encode(text.toString(), Charsets.UTF_8.name())
+        val uri = Uri.parse(preferences.urlFormat.replace("{text}", uriText))
+        openUri(context, uri)
       }
       TextbenderPreferences.Destination.SHARE -> {
         val intent =
@@ -53,8 +44,23 @@ object Textbender {
           }
         )
       }
+      TextbenderPreferences.Destination.PLECO -> {
+        val uriText = URLEncoder.encode(text.toString(), Charsets.UTF_8.name())
+        val uri = Uri.parse("plecoapi://x-callback-url/s?q=$uriText")
+        openUri(context, uri)
+      }
       TextbenderPreferences.Destination.YOMICHAN -> openInYomichan(context, text)
     }
+  }
+}
+
+private fun openUri(context: Context, uri: Uri) {
+  Log.i(TAG, "Opening URI: ${uri}")
+  val intent = Intent(Intent.ACTION_VIEW, uri).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
+  if (intent.resolveActivity(context.packageManager) !== null) {
+    context.startActivity(intent)
+  } else {
+    context.showToast(context.getString(R.string.could_not_open_uri, uri.toString()))
   }
 }
 
@@ -81,12 +87,11 @@ private fun openInYomichan(context: Context, text: CharSequence) {
   if (service !== null) {
     service.openYomichan(text)
   } else {
-    Toast.makeText(
-        context,
-        context.getString(R.string.could_not_access_accessibility_service),
-        Toast.LENGTH_LONG
-      )
-      .show()
+    context.showToast(context.getString(R.string.could_not_access_accessibility_service))
     return
   }
+}
+
+private fun Context.showToast(text: String) {
+  Toast.makeText(this, text, Toast.LENGTH_LONG).show()
 }

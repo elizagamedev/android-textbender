@@ -11,8 +11,10 @@
     please enable this service.
   </string>
 
+  <!-- Toasts -->
   <string name="could_not_open_kiwi_browser">Could not open Kiwi Browser.</string>
   <string name="could_not_access_accessibility_service">Could not access Textbender accessibility service.</string>
+  <string name="could_not_open_uri">Could not open URI: %1$s</string>
 
   <!-- Preference Titles -->
   <string name="permissions_header">Permissions</string>
@@ -52,6 +54,7 @@
   <string name="destination_clipboard">Copy to clipboard</string>
   <string name="destination_url">Open URL</string>
   <string name="destination_share">Share</string>
+  <string name="destination_pleco">Open in Pleco</string>
   <string name="destination_yomichan">Open in Yomichan via Kiwi Browser</string>
 
   <!-- Quick settings tiles -->

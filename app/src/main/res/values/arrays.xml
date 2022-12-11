@@ -5,6 +5,7 @@
     <item>@string/destination_clipboard</item>
     <item>@string/destination_url</item>
     <item>@string/destination_share</item>
+    <item>@string/destination_pleco</item>
     <item>@string/destination_yomichan</item>
   </string-array>
 
@@ -13,6 +14,7 @@
     <item>clipboard</item>
     <item>url</item>
     <item>share</item>
+    <item>pleco</item>
     <item>yomichan</item>
   </string-array>
 
@@ -20,6 +22,7 @@
     <item>@string/destination_disabled</item>
     <item>@string/destination_clipboard</item>
     <item>@string/destination_url</item>
+    <item>@string/destination_pleco</item>
     <item>@string/destination_yomichan</item>
   </string-array>
 
@@ -27,6 +30,7 @@
     <item>disabled</item>
     <item>clipboard</item>
     <item>url</item>
+    <item>pleco</item>
     <item>yomichan</item>
   </string-array>
 
@@ -34,6 +38,7 @@
     <item>@string/destination_disabled</item>
     <item>@string/destination_url</item>
     <item>@string/destination_share</item>
+    <item>@string/destination_pleco</item>
     <item>@string/destination_yomichan</item>
   </string-array>
 
@@ -41,6 +46,7 @@
     <item>disabled</item>
     <item>url</item>
     <item>share</item>
+    <item>pleco</item>
     <item>yomichan</item>
   </string-array>
 </resources>
