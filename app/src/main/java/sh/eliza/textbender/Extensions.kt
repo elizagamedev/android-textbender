@@ -93,6 +93,13 @@ fun AccessibilityNodeInfo.find(
   return null
 }
 
+val View.boundsInScreen: ImmutableRect
+  get() {
+    val location = intArrayOf(0, 0).apply { getLocationOnScreen(this) }
+    return ImmutableRect(location[0], location[1], location[0] + width, location[1] + height)
+  }
+
+/* Debug functions */
 fun AccessibilityNodeInfo.dump(prefix: String) {
   val myPrefix = "$prefix/$className"
   if (text !== null) {
@@ -119,9 +126,3 @@ fun AccessibilityWindowInfo.dump() {
     root.dump("$title -- ")
   }
 }
-
-val View.boundsInScreen: ImmutableRect
-  get() {
-    val location = intArrayOf(0, 0).apply { getLocationOnScreen(this) }
-    return ImmutableRect(location[0], location[1], location[0] + width, location[1] + height)
-  }

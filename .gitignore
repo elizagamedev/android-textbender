@@ -34,3 +34,6 @@ google-services.json
 
 # direnv
 /.direnv
+
+# Release builds
+app/release
