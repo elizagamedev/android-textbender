@@ -23,11 +23,7 @@ class BendClipboardActivity : AppCompatActivity() {
           Intent(this, SettingsActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
         )
       } else {
-        if (text.isNullOrEmpty()) {
-          toaster.show(getString(R.string.clipboard_empty), Toast.LENGTH_SHORT)
-        } else {
-          Textbender.handleText(this, toaster, preferences, preferences.clipboardDestination, text)
-        }
+        Textbender.handleText(this, toaster, preferences, preferences.clipboardDestination, text)
       }
       finish()
     }

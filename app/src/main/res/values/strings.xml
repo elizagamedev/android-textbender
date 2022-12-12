@@ -16,7 +16,7 @@
   <string name="could_not_access_accessibility_service">Could not access Textbender accessibility service.</string>
   <string name="could_not_open_kiwi_browser_url">Could not open URL in Kiwi Browser. Status: %1$s</string>
   <string name="could_not_open_uri">Could not open URI: %1$s</string>
-  <string name="clipboard_empty">Clipboard is empty.</string>
+  <string name="text_empty">Text is empty.</string>
   <string name="clipboard_not_configured">Clipboard is not configured.</string>
 
   <!-- Preference Titles -->

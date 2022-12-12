@@ -17,8 +17,12 @@ object Textbender {
     toaster: Toaster,
     preferences: TextbenderPreferences.Snapshot,
     destination: TextbenderPreferences.Destination,
-    text: CharSequence
+    text: CharSequence?
   ) {
+    if (text.isNullOrEmpty()) {
+      toaster.show(context.getString(R.string.text_empty), Toast.LENGTH_SHORT)
+      return
+    }
     when (destination) {
       TextbenderPreferences.Destination.DISABLED -> {}
       TextbenderPreferences.Destination.CLIPBOARD -> {
