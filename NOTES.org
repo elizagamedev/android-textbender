@@ -10,3 +10,7 @@
   - app/src/main/AndroidManifest.xml
     - ~targetApi~
   - flake.nix
+- When releasing a new version:
+  - app/build.gradle
+    - ~versionCode~
+    - ~versionName~
