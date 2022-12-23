@@ -38,6 +38,39 @@ copy to the clipboard or send them to another app via the share menu.
 
 ## Usage Details
 
+### Overlay and Clipboard
+
+The text button overlay and clipboard are two features that require user
+interaction to start.
+
+#### Accessibility Shortcut
+
+If you activate the accessibility shortcut, Textbender will open the button
+overlay. This shortcut can take the form of a floating button or a gesture. See
+the [official Android
+documentation](https://support.google.com/accessibility/android/answer/7650693)
+for more information.
+
+#### Floating Buttons
+
+You can configure Textbender to use a floating set of buttons, configurable to
+show a button for the button overlay, clipboard, or both. Note that this is
+different from the accessibility shortcut button described above.
+
+#### Quick Settings Tiles
+
+Textbender adds some [quick settings
+tiles](https://support.google.com/android/answer/9083864) to activate the text
+button overlay, bend the clipboard text, or toggle the floating buttons
+described above.
+
+#### Fingerprint gestures
+
+Some devices (e.g. Google Pixel 5) have the ability to use gestures across the
+fingerprint sensor as shortcuts. If you have a supported device, you can
+configure Textbender to either open the button overlay or bend the clipboard
+depending on which direction you swipe.
+
 ### Sources
 
 #### URL scheme

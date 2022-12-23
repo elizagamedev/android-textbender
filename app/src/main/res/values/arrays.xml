@@ -1,4 +1,21 @@
 <resources>
+  <!-- Fingerprint gestures -->
+  <string-array name="fingerprint_gesture_entries">
+    <item>@string/fingerprint_gesture_disabled</item>
+    <item>@string/fingerprint_gesture_down</item>
+    <item>@string/fingerprint_gesture_left</item>
+    <item>@string/fingerprint_gesture_right</item>
+    <item>@string/fingerprint_gesture_up</item>
+  </string-array>
+
+  <string-array name="fingerprint_gesture_values">
+    <item>disabled</item>
+    <item>down</item>
+    <item>left</item>
+    <item>right</item>
+    <item>up</item>
+  </string-array>
+
   <!-- Destination Method Preference -->
   <string-array name="destination_entries">
     <item>@string/destination_disabled</item>

@@ -18,10 +18,12 @@
   <string name="could_not_open_uri">Could not open URI: %1$s</string>
   <string name="text_empty">Text is empty.</string>
   <string name="clipboard_not_configured">Clipboard is not configured.</string>
+  <string name="opening_overlay">Opening overlay…</string>
 
   <!-- Preference Titles -->
   <string name="permissions_header">Permissions</string>
   <string name="floating_buttons_header">Floating buttons</string>
+  <string name="fingerprint_gesture_header">Fingerprint gestures</string>
   <string name="mappings_header">Mappings</string>
   <string name="destination_options_header">Destination options</string>
 
@@ -41,6 +43,17 @@
   <string name="floating_button_overlay_summary">Button which activates the overlay.</string>
   <string name="floating_button_clipboard_title">Bend clipboard button</string>
   <string name="floating_button_clipboard_summary">Button which bends the text currently in the clilpboard.</string>
+
+  <!-- Fingerprint gestures -->
+  <string name="fingerprint_gesture_overlay_title">Open overlay gesture</string>
+  <string name="fingerprint_gesture_clipboard_title">Open clipboard gesture</string>
+
+  <!-- Fingerprint gesture entries -->
+  <string name="fingerprint_gesture_disabled">Disabled</string>
+  <string name="fingerprint_gesture_down">Swipe down</string>
+  <string name="fingerprint_gesture_left">Swipe left</string>
+  <string name="fingerprint_gesture_right">Swipe right</string>
+  <string name="fingerprint_gesture_up">Swipe up</string>
 
   <!-- Mappings -->
   <string name="tap_destination_title">Overlay tap</string>

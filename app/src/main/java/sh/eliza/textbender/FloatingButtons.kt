@@ -100,7 +100,7 @@ class FloatingButtons(private val service: TextbenderService) : AutoCloseable {
 
   private fun onClickOverlayButton() {
     if (!isDragging) {
-      service.openOverlay()
+      service.openOverlay(showToast = false)
     }
   }
 

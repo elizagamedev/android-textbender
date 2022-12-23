@@ -28,11 +28,21 @@ private constructor(
     YOMICHAN,
   }
 
+  enum class FingerprintGesture {
+    DISABLED,
+    DOWN,
+    LEFT,
+    RIGHT,
+    UP,
+  }
+
   data class Snapshot(
     val floatingButtonsEnabled: Boolean,
     val floatingButtonsOpacity: Int,
     val floatingButtonOverlayEnabled: Boolean,
     val floatingButtonClipboardEnabled: Boolean,
+    val fingerprintGestureOverlay: FingerprintGesture,
+    val fingerprintGestureClipboard: FingerprintGesture,
     val tapDestination: Destination,
     val longPressDestination: Destination,
     val globalContextMenuDestination: Destination,
@@ -99,6 +109,17 @@ private constructor(
     val floatingButtonClipboardEnabled =
       preferences.getBoolean("floating_button_clipboard", defaults.floatingButtonClipboardEnabled)
 
+    val fingerprintGestureOverlay =
+      preferences.getFingerprintGesture(
+        "fingerprint_gesture_overlay",
+        defaults.fingerprintGestureOverlay
+      )
+    val fingerprintGestureClipboard =
+      preferences.getFingerprintGesture(
+        "fingerprint_gesture_clipboard",
+        defaults.fingerprintGestureClipboard
+      )
+
     // Mappings
     val tapDestination = preferences.getDestination("tap_destination", defaults.tapDestination)
     val longPressDestination =
@@ -132,6 +153,8 @@ private constructor(
       floatingButtonsOpacity,
       floatingButtonOverlayEnabled,
       floatingButtonClipboardEnabled,
+      fingerprintGestureOverlay,
+      fingerprintGestureClipboard,
       tapDestination,
       longPressDestination,
       globalContextMenuDestination,
@@ -156,6 +179,17 @@ private constructor(
       else -> throw IllegalArgumentException()
     }
 
+  private fun SharedPreferences.getFingerprintGesture(key: String, default: FingerprintGesture) =
+    when (getString(key, null)) {
+      "disabled" -> FingerprintGesture.DISABLED
+      "down" -> FingerprintGesture.DOWN
+      "left" -> FingerprintGesture.LEFT
+      "right" -> FingerprintGesture.RIGHT
+      "up" -> FingerprintGesture.UP
+      null -> default
+      else -> throw IllegalArgumentException()
+    }
+
   companion object {
     fun getInstance(context: Context) =
       instanceLock.withLock {
@@ -169,6 +203,8 @@ private constructor(
                 Integer.parseInt(context.getString(R.string.floating_buttons_opacity_default)),
               floatingButtonOverlayEnabled = false,
               floatingButtonClipboardEnabled = false,
+              fingerprintGestureOverlay = FingerprintGesture.DISABLED,
+              fingerprintGestureClipboard = FingerprintGesture.DISABLED,
               tapDestination = Destination.DISABLED,
               longPressDestination = Destination.DISABLED,
               globalContextMenuDestination = Destination.DISABLED,

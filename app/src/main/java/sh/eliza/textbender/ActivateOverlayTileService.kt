@@ -19,7 +19,7 @@ class ActivateOverlayTileService : TextbenderTileService() {
     super.onClick()
     val serviceInstance = serviceInstance
     if (serviceInstance !== null) {
-      serviceInstance.openOverlay(500L)
+      serviceInstance.openOverlay(500L, showToast = false)
       startActivityAndCollapse(
         Intent(this, DummyActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
       )

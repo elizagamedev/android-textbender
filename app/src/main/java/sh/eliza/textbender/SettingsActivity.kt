@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
@@ -14,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
+import androidx.preference.Preference
 import androidx.preference.Preference.OnPreferenceChangeListener
 import androidx.preference.Preference.OnPreferenceClickListener
 import androidx.preference.PreferenceFragmentCompat
@@ -121,6 +124,12 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var accessibilityPreference: PermissionPreference
     private lateinit var notificationsPreference: PermissionPreference
+    private lateinit var fingerprintGestureOverlayPreference: Preference
+    private lateinit var fingerprintGestureClipboardPreference: Preference
+
+    private val handler = Handler(Looper.getMainLooper())
+    private var isAccessibilityServiceEnabled = false
+    private var isFingerprintAvailable = false
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
       setPreferencesFromResource(R.xml.root_preferences, rootKey)
@@ -128,23 +137,7 @@ class SettingsActivity : AppCompatActivity() {
       accessibilityPreference =
         SettingsPermissionPreference(
           "accessibility",
-          {
-            try {
-              val context = requireContext()
-              val services =
-                Settings.Secure.getString(
-                  context.contentResolver,
-                  Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-                )
-              services != null &&
-                services
-                  .split(':')
-                  .contains("${context.packageName}/${TextbenderService::class.qualifiedName}")
-            } catch (e: Settings.SettingNotFoundException) {
-              Log.e(TAG, "Failed to determine if accessibility service enabled", e)
-              false
-            }
-          },
+          { isAccessibilityServiceEnabled },
           { Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS) }
         )
 
@@ -178,12 +171,54 @@ class SettingsActivity : AppCompatActivity() {
       findPreference<EditTextPreference>("url_format")!!.setOnBindEditTextListener {
         it.hint = getString(R.string.url_format_default)
       }
+
+      fingerprintGestureOverlayPreference =
+        findPreference<Preference>("fingerprint_gesture_overlay")!!
+      fingerprintGestureClipboardPreference =
+        findPreference<Preference>("fingerprint_gesture_clipboard")!!
+
+      TextbenderService.addOnFingerprintAvailableListener(this::onFingerprintAvailable, handler)
     }
 
     override fun onResume() {
       super.onResume()
+      isAccessibilityServiceEnabled =
+        try {
+          val context = requireContext()
+          val services =
+            Settings.Secure.getString(
+              context.contentResolver,
+              Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            )
+          services != null &&
+            services
+              .split(':')
+              .contains("${context.packageName}/${TextbenderService::class.qualifiedName}")
+        } catch (e: Settings.SettingNotFoundException) {
+          Log.e(TAG, "Failed to determine if accessibility service enabled", e)
+          false
+        }
+
       accessibilityPreference.onResume()
       notificationsPreference.onResume()
+
+      recalculateDependencies()
+    }
+
+    override fun onDestroy() {
+      super.onDestroy()
+      TextbenderService.removeOnFingerprintAvailableListener(this::onFingerprintAvailable)
+    }
+
+    private fun onFingerprintAvailable() {
+      isFingerprintAvailable = true
+      recalculateDependencies()
+    }
+
+    private fun recalculateDependencies() {
+      val enabled = isFingerprintAvailable && isAccessibilityServiceEnabled
+      fingerprintGestureOverlayPreference.setEnabled(enabled)
+      fingerprintGestureClipboardPreference.setEnabled(enabled)
     }
 
     private fun ListPreference.setAsComponentDestination(className: String) {

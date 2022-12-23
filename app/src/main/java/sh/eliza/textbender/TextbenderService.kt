@@ -3,12 +3,16 @@ package sh.eliza.textbender
 import android.accessibilityservice.AccessibilityButtonController
 import android.accessibilityservice.AccessibilityButtonController.AccessibilityButtonCallback
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.FingerprintGestureController
+import android.accessibilityservice.FingerprintGestureController.FingerprintGestureCallback
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import android.widget.Toast
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 private const val TAG = "TextbenderService"
@@ -49,15 +53,40 @@ class TextbenderService : AccessibilityService() {
 
         override fun onClicked(controller: AccessibilityButtonController) {
           if (snapshot === null) {
-            openOverlay()
+            openOverlay(showToast = true)
           }
         }
       }
     )
 
-    handler.post { resetFloatingButton(preferences.snapshot) }
+    fingerprintGestureController.registerFingerprintGestureCallback(
+      object : FingerprintGestureCallback() {
+        override fun onGestureDetected(gesture: Int) {
+          val fingerprintGesture =
+            when (gesture) {
+              FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN ->
+                TextbenderPreferences.FingerprintGesture.DOWN
+              FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT ->
+                TextbenderPreferences.FingerprintGesture.LEFT
+              FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT ->
+                TextbenderPreferences.FingerprintGesture.RIGHT
+              FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP ->
+                TextbenderPreferences.FingerprintGesture.UP
+              else -> null
+            }
+              ?: return
+          onGesture(fingerprintGesture)
+        }
 
-    preferences.addOnChangeListener(this::onPreferenceChange, handler)
+        override fun onGestureDetectionAvailabilityChanged(available: Boolean) {
+          handleMaybeFingerprintAvailable(available)
+        }
+      },
+      handler
+    )
+    handleMaybeFingerprintAvailable(fingerprintGestureController.isGestureDetectionAvailable)
+
+    handler.post { resetFloatingButton(preferences.snapshot) }
   }
 
   override fun onUnbind(intent: Intent): Boolean {
@@ -89,11 +118,11 @@ class TextbenderService : AccessibilityService() {
     handler.post { handleOpenYomichan(text) }
   }
 
-  fun openOverlay(delayMs: Long = 0L) {
+  fun openOverlay(delayMs: Long = 0L, showToast: Boolean) {
     if (delayMs <= 0) {
-      handler.post(this::handleOpenOverlay)
+      handler.post { handleOpenOverlay(showToast) }
     } else {
-      handler.postDelayed(this::handleOpenOverlay, delayMs)
+      handler.postDelayed({ handleOpenOverlay(showToast) }, delayMs)
     }
   }
 
@@ -113,7 +142,10 @@ class TextbenderService : AccessibilityService() {
       ?.close()
   }
 
-  private fun handleOpenOverlay() {
+  private fun handleOpenOverlay(showToast: Boolean) {
+    if (showToast) {
+      toaster.show(getString(R.string.opening_overlay), Toast.LENGTH_SHORT)
+    }
     floatingButtons?.close()
     floatingButtons = null
     snapshot?.close()
@@ -147,13 +179,37 @@ class TextbenderService : AccessibilityService() {
     }
   }
 
+  private fun onGesture(gesture: TextbenderPreferences.FingerprintGesture) {
+    val snapshot = preferences.snapshot
+    if (snapshot.fingerprintGestureOverlay == gesture) {
+      handleOpenOverlay(showToast = true)
+    } else if (snapshot.fingerprintGestureClipboard == gesture) {
+      startActivity(
+        Intent(this, BendClipboardActivity::class.java).apply {
+          flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+      )
+    }
+  }
+
+  private fun handleMaybeFingerprintAvailable(available: Boolean) {
+    if (available && !atomicIsFingerprintAvailable.getAndSet(true)) {
+      for ((listener, listenerHandler) in onFingerprintAvailableListeners) {
+        listenerHandler.post(listener)
+      }
+    }
+  }
+
   companion object {
     val instance: TextbenderService?
       get() = atomicInstance.get()
 
     private val atomicInstance = AtomicReference<TextbenderService>()
+    private val atomicIsFingerprintAvailable = AtomicBoolean(false)
+
     private val onInstanceChangedListeners =
       ConcurrentHashMap<(TextbenderService?) -> Unit, Handler>()
+    private val onFingerprintAvailableListeners = ConcurrentHashMap<() -> Unit, Handler>()
 
     fun addOnInstanceChangedListener(listener: (TextbenderService?) -> Unit, handler: Handler) {
       onInstanceChangedListeners.put(listener, handler)
@@ -161,6 +217,17 @@ class TextbenderService : AccessibilityService() {
 
     fun removeOnInstanceChangedListener(listener: (TextbenderService?) -> Unit) {
       onInstanceChangedListeners.remove(listener)
+    }
+
+    fun addOnFingerprintAvailableListener(listener: () -> Unit, handler: Handler) {
+      onFingerprintAvailableListeners.put(listener, handler)
+      if (atomicIsFingerprintAvailable.get()) {
+        handler.post(listener)
+      }
+    }
+
+    fun removeOnFingerprintAvailableListener(listener: () -> Unit) {
+      onFingerprintAvailableListeners.remove(listener)
     }
   }
 }

@@ -46,6 +46,24 @@
 
   </PreferenceCategory>
 
+  <PreferenceCategory app:title="@string/fingerprint_gesture_header">
+    <ListPreference
+        app:key="fingerprint_gesture_overlay"
+        app:defaultValue="disabled"
+        app:entries="@array/fingerprint_gesture_entries"
+        app:entryValues="@array/fingerprint_gesture_values"
+        app:title="@string/fingerprint_gesture_overlay_title"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        app:key="fingerprint_gesture_clipboard"
+        app:defaultValue="disabled"
+        app:entries="@array/fingerprint_gesture_entries"
+        app:entryValues="@array/fingerprint_gesture_values"
+        app:title="@string/fingerprint_gesture_clipboard_title"
+        app:useSimpleSummaryProvider="true" />
+  </PreferenceCategory>
+
   <PreferenceCategory app:title="@string/mappings_header">
 
     <ListPreference

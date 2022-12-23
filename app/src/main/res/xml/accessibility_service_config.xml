@@ -2,8 +2,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:summary="@string/accessibility_service_summary"
     android:description="@string/accessibility_service_description"
-    android:accessibilityFlags="flagRetrieveInteractiveWindows|flagRequestAccessibilityButton|flagReportViewIds"
+    android:accessibilityFlags="flagRetrieveInteractiveWindows|flagRequestAccessibilityButton|flagReportViewIds|flagRequestFingerprintGestures"
     android:accessibilityFeedbackType="feedbackVisual"
     android:canRetrieveWindowContent="true"
     android:settingsActivity="sh.eliza.SettingsActivity"
+    android:canRequestFingerprintGestures="true"
     />
