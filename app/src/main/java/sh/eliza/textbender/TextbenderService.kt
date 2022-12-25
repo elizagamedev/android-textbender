@@ -86,6 +86,7 @@ class TextbenderService : AccessibilityService() {
     )
     handleMaybeFingerprintAvailable(fingerprintGestureController.isGestureDetectionAvailable)
 
+    preferences.addOnChangeListener(this::onPreferenceChange, handler)
     handler.post { resetFloatingButton(preferences.snapshot) }
   }
 
