@@ -172,6 +172,10 @@ class SettingsActivity : AppCompatActivity() {
         it.hint = getString(R.string.url_format_default)
       }
 
+      findPreference<EditTextPreference>("strip_regexp")!!.setOnBindEditTextListener {
+        it.hint = "\\s+"
+      }
+
       fingerprintGestureOverlayPreference =
         findPreference<Preference>("fingerprint_gesture_overlay")!!
       fingerprintGestureClipboardPreference =

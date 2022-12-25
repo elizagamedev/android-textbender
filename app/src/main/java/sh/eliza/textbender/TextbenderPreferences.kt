@@ -49,6 +49,7 @@ private constructor(
     val shareDestination: Destination,
     val urlDestination: Destination,
     val clipboardDestination: Destination,
+    val stripRegexp: String,
     val urlFormat: String,
     // Hidden preferences.
     val floatingButtonsX: Int,
@@ -141,6 +142,9 @@ private constructor(
       throw IllegalArgumentException()
     }
 
+    // Text processing options
+    val stripRegexp = preferences.getString("strip_regexp", null) ?: defaults.stripRegexp
+
     // Destionation Options
     val urlFormat = preferences.getString("url_format", null) ?: defaults.urlFormat
 
@@ -161,6 +165,7 @@ private constructor(
       shareDestination,
       urlDestination,
       clipboardDestination,
+      stripRegexp,
       urlFormat,
       floatingButtonsX,
       floatingButtonsY
@@ -211,6 +216,7 @@ private constructor(
               shareDestination = Destination.DISABLED,
               urlDestination = Destination.DISABLED,
               clipboardDestination = Destination.DISABLED,
+              stripRegexp = "",
               urlFormat = context.getString(R.string.url_format_default),
               // Hidden preferences.
               floatingButtonsX = 0,

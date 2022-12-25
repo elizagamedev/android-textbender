@@ -8,6 +8,8 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import java.net.URLEncoder
+import kotlin.text.Regex
+import kotlin.text.RegexOption
 
 private const val TAG = "Textbender"
 
@@ -19,7 +21,24 @@ object Textbender {
     destination: TextbenderPreferences.Destination,
     text: CharSequence?
   ) {
-    if (text.isNullOrEmpty()) {
+    val stripRegexp =
+      if (preferences.stripRegexp.isEmpty()) {
+        null
+      } else {
+        try {
+          Regex(preferences.stripRegexp, setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE))
+        } catch (t: Throwable) {
+          toaster.show(context.getString(R.string.invalid_regexp, t.message), Toast.LENGTH_LONG)
+          null
+        }
+      }
+    val strippedText =
+      if (stripRegexp === null || text === null) {
+        text
+      } else {
+        stripRegexp.replace(text, "")
+      }
+    if (strippedText.isNullOrEmpty()) {
       toaster.show(context.getString(R.string.text_empty), Toast.LENGTH_SHORT)
       return
     }
@@ -32,7 +51,7 @@ object Textbender {
         clipboardManager.setPrimaryClip(clipData)
       }
       TextbenderPreferences.Destination.URL -> {
-        val uriText = URLEncoder.encode(text.toString(), Charsets.UTF_8.name())
+        val uriText = URLEncoder.encode(strippedText.toString(), Charsets.UTF_8.name())
         val uri = Uri.parse(preferences.urlFormat.replace("{text}", uriText))
         openUri(context, toaster, uri)
       }
@@ -41,7 +60,7 @@ object Textbender {
           Intent(Intent.ACTION_SEND).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
             setType("text/plain")
-            putExtra(Intent.EXTRA_TEXT, text)
+            putExtra(Intent.EXTRA_TEXT, strippedText)
           }
         context.startActivity(
           Intent.createChooser(intent, context.getString(R.string.app_name)).apply {
@@ -50,11 +69,11 @@ object Textbender {
         )
       }
       TextbenderPreferences.Destination.PLECO -> {
-        val uriText = URLEncoder.encode(text.toString(), Charsets.UTF_8.name())
+        val uriText = URLEncoder.encode(strippedText.toString(), Charsets.UTF_8.name())
         val uri = Uri.parse("plecoapi://x-callback-url/s?q=$uriText")
         openUri(context, toaster, uri)
       }
-      TextbenderPreferences.Destination.YOMICHAN -> openInYomichan(context, toaster, text)
+      TextbenderPreferences.Destination.YOMICHAN -> openInYomichan(context, toaster, strippedText)
     }
   }
 }

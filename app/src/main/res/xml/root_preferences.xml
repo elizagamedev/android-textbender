@@ -118,6 +118,15 @@
 
   </PreferenceCategory>
 
+  <PreferenceCategory app:title="@string/text_processing_header">
+
+    <EditTextPreference
+        app:key="strip_regexp"
+        app:title="@string/strip_regexp_title"
+        app:useSimpleSummaryProvider="true" />
+
+  </PreferenceCategory>
+
   <PreferenceCategory app:title="@string/destination_options_header">
 
     <EditTextPreference

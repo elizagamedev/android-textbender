@@ -19,12 +19,14 @@
   <string name="text_empty">Text is empty.</string>
   <string name="clipboard_not_configured">Clipboard is not configured.</string>
   <string name="opening_overlay">Opening overlay…</string>
+  <string name="invalid_regexp">Invalid regular expression: %1$s</string>
 
   <!-- Preference Titles -->
   <string name="permissions_header">Permissions</string>
   <string name="floating_buttons_header">Floating buttons</string>
   <string name="fingerprint_gesture_header">Fingerprint gestures</string>
   <string name="mappings_header">Mappings</string>
+  <string name="text_processing_header">Text processing options</string>
   <string name="destination_options_header">Destination options</string>
 
   <!-- Permissions -->
@@ -62,6 +64,9 @@
   <string name="share_destination_title">Share menu</string>
   <string name="url_destination_title">URL scheme</string>
   <string name="clipboard_destination_title">Clipboard</string>
+
+  <!-- Text processing -->
+  <string name="strip_regexp_title">Strip characters regexp</string>
 
   <!-- Destination Options -->
   <string name="url_format_title">URL format</string>
