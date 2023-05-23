@@ -71,6 +71,9 @@
   <!-- Destination Options -->
   <string name="url_format_title">URL format</string>
   <string name="url_format_default" translatable="false">https://duckduckgo.com/?q={text}</string>
+  <string name="yomichan_timeout_title">Yomichan automation timeout</string>
+  <string name="yomichan_timeout_summary">Timeout in seconds for Yomichan UI automation.</string>
+  <string name="yomichan_timeout_default" translatable="false">1</string>
 
   <!-- Destination entries -->
   <string name="destination_disabled">Disabled</string>

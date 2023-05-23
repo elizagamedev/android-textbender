@@ -9,7 +9,6 @@ import java.net.URLEncoder
 
 private const val TAG = "OpenYomichanStateMachine"
 
-private const val MAX_RETRIES = 10
 private const val RETRY_INTERVAL_MS = 100L
 
 private const val YOMICHAN_URL_PREFIX =
@@ -19,6 +18,7 @@ private const val YOMICHAN_URL_PREFIX =
 class OpenYomichanStateMachine(
   private val service: TextbenderService,
   private val text: CharSequence,
+  preferences: TextbenderPreferences.Snapshot,
   private val onQuit: (OpenYomichanStateMachine) -> Unit,
 ) : AutoCloseable {
   interface State {
@@ -108,6 +108,8 @@ class OpenYomichanStateMachine(
   val isAlive: Boolean
     get() = state !== null
 
+  private val maxRetries = (preferences.yomichanTimeout * 1000) / RETRY_INTERVAL_MS
+
   private var state: State? = LocateKiwiBrowserWindow()
   private var tries = 0
 
@@ -134,7 +136,7 @@ class OpenYomichanStateMachine(
 
     val state = state
     if (state !== null) {
-      if (tries < MAX_RETRIES) {
+      if (tries < maxRetries) {
         service.handler.postDelayed(this::advance, RETRY_INTERVAL_MS)
         return
       }

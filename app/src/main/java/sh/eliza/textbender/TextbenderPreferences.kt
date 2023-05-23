@@ -51,6 +51,7 @@ private constructor(
     val clipboardDestination: Destination,
     val stripRegexp: String,
     val urlFormat: String,
+    val yomichanTimeout: Int,
     // Hidden preferences.
     val floatingButtonsX: Int,
     val floatingButtonsY: Int,
@@ -147,6 +148,7 @@ private constructor(
 
     // Destionation Options
     val urlFormat = preferences.getString("url_format", null) ?: defaults.urlFormat
+    val yomichanTimeout = preferences.getInt("yomichan_timeout", defaults.yomichanTimeout)
 
     // Hidden Options
     val floatingButtonsX = preferences.getInt("floating_buttons_x", 0)
@@ -167,6 +169,7 @@ private constructor(
       clipboardDestination,
       stripRegexp,
       urlFormat,
+      yomichanTimeout,
       floatingButtonsX,
       floatingButtonsY
     )
@@ -218,6 +221,8 @@ private constructor(
               clipboardDestination = Destination.DISABLED,
               stripRegexp = "",
               urlFormat = context.getString(R.string.url_format_default),
+              yomichanTimeout =
+                Integer.parseInt(context.getString(R.string.yomichan_timeout_default)),
               // Hidden preferences.
               floatingButtonsX = 0,
               floatingButtonsY = 0,

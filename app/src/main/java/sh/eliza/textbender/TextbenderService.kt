@@ -135,7 +135,7 @@ class TextbenderService : AccessibilityService() {
   private fun handleOpenYomichan(text: CharSequence) {
     openYomichanStateMachine
       .getAndSet(
-        OpenYomichanStateMachine(this, text) {
+        OpenYomichanStateMachine(this, text, previousPreferencesSnapshot ?: preferences.defaults) {
           it.close()
           openYomichanStateMachine.compareAndSet(it, null)
         }

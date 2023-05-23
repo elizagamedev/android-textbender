@@ -132,8 +132,16 @@
     <EditTextPreference
         app:key="url_format"
         app:title="@string/url_format_title"
-        app:defaultValue="@string/url_format_default"
-        app:useSimpleSummaryProvider="true" />
+        app:defaultValue="@string/url_format_default" />
+
+    <SeekBarPreference
+        app:key="yomichan_timeout"
+        app:defaultValue="@string/yomichan_timeout_default"
+        app:min="1"
+        android:max="20"
+        app:title="@string/yomichan_timeout_title"
+        app:summary="@string/yomichan_timeout_summary"
+        app:showSeekBarValue="true" />
 
   </PreferenceCategory>
 
