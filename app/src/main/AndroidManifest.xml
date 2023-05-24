@@ -40,6 +40,14 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <data android:mimeType="text/plain"/>
       </intent-filter>
+      <!-- The below block is "incorrect". However, it's required for the
+           Textbender context menu to appear in certain apps. -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https" />
+      </intent-filter>
     </activity-alias>
 
     <activity-alias
