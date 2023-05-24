@@ -36,6 +36,14 @@ There’s more you can do that isn’t demonstrated in this list; for example,
 instead of opening dictionary apps directly, you can have the overlay buttons
 copy to the clipboard or send them to another app via the share menu.
 
+## Installation
+
+Textbender can be downloaded from the [Releases
+page](https://github.com/elizagamedev/android-textbender/releases). It is also
+unofficially hosted on the IzzyOnDroid repo
+[here](https://apt.izzysoft.de/fdroid/index/apk/sh.eliza.textbender). I plan on
+adding it to F-Droid when I can muster the energy.
+
 ## Usage Details
 
 ### Overlay and Clipboard
@@ -95,12 +103,14 @@ bent with the source text `foo`, will open the URL
 
 #### Yomichan
 
-The yomichan integration is pretty flaky but works mostly reliable on my device.
-It has the following requirements:
+The Yomichan integration works by automating the process of opening the search
+page in Yomichan with the given text, since it is not possible for an external
+app to otherwise directly open a browser page to an addon. It has the following
+requirements:
 
-- Textbender’s accessibility service is enabled
-- Kiwi Browser and the Yomichan extension are both installed
-- Kiwi Browser is *open* with at least one tab.
+- Textbender’s accessibility service is enabled.
+- Kiwi Browser and the Yomichan extension are both installed.
+- Kiwi Browser has at least one tab open, i.e. the address bar is visible.
 
 ## Development
 
