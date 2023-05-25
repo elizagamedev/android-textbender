@@ -39,9 +39,9 @@
     } // {
       overlays.default = final: prev: {
         textbender-android-sdk = rec {
-          buildToolsVersion = "33.0.0";
+          buildToolsVersion = "33.0.2";
           androidComposition = prev.androidenv.composeAndroidPackages {
-            platformToolsVersion = "33.0.2";
+            platformToolsVersion = "34.0.1";
             buildToolsVersions = [ buildToolsVersion ];
             platformVersions = [ "33" ];
             abiVersions = [ "arm64-v8a" "armeabi-v7a" ];
