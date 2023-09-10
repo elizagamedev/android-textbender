@@ -92,7 +92,12 @@ class Snapshot(
       }
       val boundsInScreen = node.boundsInScreen
       val text = node.text
-      val children = node.children
+      val children =
+        node.children.apply {
+          // Sort by reverse drawing order.
+          sortBy { it.drawingOrder }
+          reverse()
+        }
       if (!children.isEmpty()) {
         if (!occlusionBuffer.isPartiallyVisible(boundsInScreen)) {
           return

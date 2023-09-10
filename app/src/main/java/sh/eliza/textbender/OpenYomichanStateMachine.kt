@@ -66,16 +66,15 @@ class OpenYomichanStateMachine(
         }
       )
 
-      return LocateResult(root, url)
+      return Delay(1, LocateResult(root))
     }
   }
 
   private inner class LocateResult(
     private val root: AccessibilityNodeInfo,
-    private val url: String
   ) : State {
     override fun advance(): State? {
-      Log.i(TAG, "LocateGoButton")
+      Log.i(TAG, "LocateResult")
       val result =
         root
           .findAccessibilityNodeInfosByViewId(
@@ -83,9 +82,10 @@ class OpenYomichanStateMachine(
           )
           ?.firstOrNull()
           ?.getChild(0)
-          ?.getChild(0)
-          ?.children
-          ?.firstOrNull { it.find { it.text?.startsWith(YOMICHAN_URL_PREFIX) ?: false } !== null }
+          ?.children // Search results.
+          ?.lastOrNull() // Always the last result.
+          ?.find { it.isClickable() } // Click the button, not the container.
+
       if (result === null) {
         return this
       }
@@ -115,6 +115,7 @@ class OpenYomichanStateMachine(
 
   init {
     service.softKeyboardController.showMode = AccessibilityService.SHOW_MODE_HIDDEN
+    Log.i(TAG, "maxRetries = $maxRetries")
     advance()
   }
 
@@ -128,11 +129,14 @@ class OpenYomichanStateMachine(
           state
         }
       if (state === newState) {
+        if (state !is Delay) {
+          tries++
+        }
         break
       }
       state = newState
+      tries = 0
     }
-    tries++
 
     val state = state
     if (state !== null) {

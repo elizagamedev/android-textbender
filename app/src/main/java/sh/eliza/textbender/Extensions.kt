@@ -12,16 +12,14 @@ import kotlin.math.min
 
 private const val TAG = "Extensions"
 
-/** List of children sorted by reverse drawing order. */
-val AccessibilityNodeInfo.children: List<AccessibilityNodeInfo>
+/** List of children. */
+val AccessibilityNodeInfo.children: ArrayList<AccessibilityNodeInfo>
   get() {
     val childCount = childCount
     val list = ArrayList<AccessibilityNodeInfo>(childCount)
     for (i in 0 until childCount) {
       getChild(i)?.let { list.add(it) }
     }
-    list.sortBy { it.drawingOrder }
-    list.reverse()
     return list
   }
 

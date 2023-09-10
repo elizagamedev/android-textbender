@@ -34,7 +34,7 @@ class TextbenderService : AccessibilityService() {
   override fun onCreate() {
     super.onCreate()
     preferences = TextbenderPreferences.getInstance(applicationContext)
-    previousPreferencesSnapshot = preferences.defaults
+    previousPreferencesSnapshot = preferences.snapshot
     windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
   }
 
@@ -135,7 +135,7 @@ class TextbenderService : AccessibilityService() {
   private fun handleOpenYomichan(text: CharSequence) {
     openYomichanStateMachine
       .getAndSet(
-        OpenYomichanStateMachine(this, text, previousPreferencesSnapshot ?: preferences.defaults) {
+        OpenYomichanStateMachine(this, text, preferences.snapshot) {
           it.close()
           openYomichanStateMachine.compareAndSet(it, null)
         }
