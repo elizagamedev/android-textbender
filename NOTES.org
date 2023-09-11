@@ -1,16 +1,23 @@
-* Notes
-- When updating SDK/build tools versions, the following must be changed:
-  - app/build.gradle
-    - ~compileSdk~
-    - ~buildToolsVersion~
-    - ~targetSdk~
-    - ~sourceCompatibility~
-    - ~targetCompatibility~
-    - ~jvmTarget~
-  - app/src/main/AndroidManifest.xml
-    - ~targetApi~
-  - flake.nix
-- When releasing a new version:
-  - app/build.gradle
-    - ~versionCode~
-    - ~versionName~
+* Updating SDK/build tools version
+- app/build.gradle
+  - ~compileSdk~
+  - ~buildToolsVersion~
+  - ~targetSdk~
+  - ~sourceCompatibility~
+  - ~targetCompatibility~
+  - ~jvmTarget~
+- app/src/main/AndroidManifest.xml
+  - ~targetApi~
+- flake.nix
+* Releasing a new version
+- app/build.gradle
+  - ~versionCode~
+  - ~versionName~
+- Sign app
+  #+begin_src sh
+    ./gradlew assembleRelease
+    rm -rf app/release && mkdir -p app/release
+    zipalign -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk app/release/app-release-unsigned-aligned.apk
+    apksigner sign --ks ~/.AndroidKeyStore/textbender-fdroid.jks --out app/release/app-release.apk app/release/app-release-unsigned-aligned.apk
+    apksigner verify app/release/app-release.apk
+  #+end_src

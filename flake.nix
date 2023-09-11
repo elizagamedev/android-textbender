@@ -21,21 +21,27 @@
     with pkgs;
     with textbender-android-sdk;
     {
-      devShells.x86_64-linux.default = mkShell {
-        buildInputs = [
-          androidComposition.androidsdk
-          androidStudioPackages.beta
-          kotlin-language-server
-        ];
-        ANDROID_SDK_ROOT =
-          "${androidComposition.androidsdk}/libexec/android-sdk";
-        GRADLE_OPTS =
-          "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidComposition.androidsdk}/libexec/android-sdk/build-tools/${buildToolsVersion}/aapt2";
-        JAVA_HOME = "${jdk11}";
-        shellHook = ''
-          echo sdk.dir=$ANDROID_SDK_ROOT > local.properties
-        '';
-      };
+
+      devShells.x86_64-linux.default =
+        let
+          build-tools = "${androidComposition.androidsdk}/libexec/android-sdk/build-tools/${buildToolsVersion}";
+        in
+        mkShell {
+          buildInputs = [
+            androidComposition.androidsdk
+            androidStudioPackages.beta
+            kotlin-language-server
+          ];
+          ANDROID_SDK_ROOT =
+            "${androidComposition.androidsdk}/libexec/android-sdk";
+          GRADLE_OPTS =
+            "-Dorg.gradle.project.android.aapt2FromMavenOverride=${build-tools}/aapt2";
+          JAVA_HOME = "${jdk11}";
+          shellHook = ''
+            echo sdk.dir=$ANDROID_SDK_ROOT > local.properties
+            export PATH="$PATH:${build-tools}"
+          '';
+        };
     } // {
       overlays.default = final: prev: {
         textbender-android-sdk = rec {
