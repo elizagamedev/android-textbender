@@ -12,7 +12,7 @@ private const val TAG = "OpenYomichanStateMachine"
 private const val RETRY_INTERVAL_MS = 100L
 
 private const val YOMICHAN_URL_PREFIX =
-  "chrome-extension://ogmnaimimemjmbakcfefmnahgdfhfami/search.html?query="
+  "chrome-extension://likgccmbimhjbgkjambclfkhldnlhbnn/search.html?query="
 
 /** Replace this with a coroutine or something eventually. */
 class OpenYomichanStateMachine(

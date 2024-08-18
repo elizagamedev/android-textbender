@@ -7,7 +7,7 @@
 
   <string name="accessibility_service_description">
     The Textbender accessibility service is required by the text button overlay,
-    floating buttons, and Yomichan support. To use any or all of these features,
+    floating buttons, and Yomitan support. To use any or all of these features,
     please enable this service.
   </string>
 
@@ -31,7 +31,7 @@
 
   <!-- Permissions -->
   <string name="accessibility_title">Accessibility service</string>
-  <string name="accessibility_summary">Required for text button overlay and Yomichan support.</string>
+  <string name="accessibility_summary">Required for text button overlay and Yomitan support.</string>
   <string name="notifications_title">Notifications</string>
   <string name="notifications_summary">Required for toasts to appear.</string>
 
@@ -44,7 +44,7 @@
   <string name="floating_button_overlay_title">Activate overlay button</string>
   <string name="floating_button_overlay_summary">Button which activates the overlay.</string>
   <string name="floating_button_clipboard_title">Bend clipboard button</string>
-  <string name="floating_button_clipboard_summary">Button which bends the text currently in the clilpboard.</string>
+  <string name="floating_button_clipboard_summary">Button which bends the text currently in the clipboard.</string>
 
   <!-- Fingerprint gestures -->
   <string name="fingerprint_gesture_overlay_title">Open overlay gesture</string>
@@ -71,8 +71,8 @@
   <!-- Destination Options -->
   <string name="url_format_title">URL format</string>
   <string name="url_format_default" translatable="false">https://duckduckgo.com/?q={text}</string>
-  <string name="yomichan_timeout_title">Yomichan automation timeout</string>
-  <string name="yomichan_timeout_summary">Timeout in seconds for Yomichan UI automation.</string>
+  <string name="yomichan_timeout_title">Yomitan automation timeout</string>
+  <string name="yomichan_timeout_summary">Timeout in seconds for Yomitan UI automation.</string>
   <string name="yomichan_timeout_default" translatable="false">1</string>
 
   <!-- Destination entries -->
@@ -81,7 +81,7 @@
   <string name="destination_url">Open URL</string>
   <string name="destination_share">Share</string>
   <string name="destination_pleco">Open in Pleco</string>
-  <string name="destination_yomichan">Open in Yomichan via Kiwi Browser</string>
+  <string name="destination_yomichan">Open in Yomitan via Kiwi Browser</string>
 
   <!-- Quick settings tiles -->
   <string name="qs_bend_clipboard">Bend clipboard</string>

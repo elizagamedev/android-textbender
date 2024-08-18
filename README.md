@@ -1,4 +1,4 @@
-# Textbender
+# Textbender (with Yomitan support)
 
 Bend Android text to your whim.
 
